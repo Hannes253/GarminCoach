@@ -1,7 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+
+function CallbackError() {
+  const searchParams = useSearchParams();
+  if (searchParams.get("error") !== "auth") return null;
+
+  return (
+    <p className="text-sm text-red-600">
+      Login-Link ist ungültig oder abgelaufen (z. B. schon einmal geöffnet). Bitte neuen Link
+      anfordern.
+    </p>
+  );
+}
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,7 +26,7 @@ export default function LoginPage() {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/` },
+      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
     });
     setStatus(error ? "error" : "sent");
   }
@@ -21,6 +34,10 @@ export default function LoginPage() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-6 px-6">
       <h1 className="text-xl font-semibold">GarminCoach</h1>
+
+      <Suspense fallback={null}>
+        <CallbackError />
+      </Suspense>
 
       {status === "sent" ? (
         <p className="text-center text-sm text-foreground/70">
