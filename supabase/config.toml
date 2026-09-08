@@ -1,0 +1,22 @@
+project_id = "garmincoach"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public"]
+
+[db]
+port = 54322
+
+[studio]
+enabled = true
+port = 54323
+
+[auth]
+enabled = true
+# Single-user app: the one account is provisioned directly (e.g. via
+# `supabase auth users create` or the dashboard). Public signup is disabled.
+enable_signup = false
+
+[auth.email]
+enable_confirmations = false

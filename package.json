@@ -1,0 +1,16 @@
+{
+  "name": "garmincoach",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.33.0",
+  "scripts": {
+    "dev": "pnpm --filter web dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "boundary-check": "pnpm --filter @garmincoach/training-engine boundary-check"
+  }
+}
