@@ -87,4 +87,16 @@ describe("mergeActivity", () => {
     const result = mergeActivity(existing, activity({ avgHr: 999 }), "csv");
     expect(result.source).toBe("fit");
   });
+
+  it("ranks Strava above CSV but below FIT", () => {
+    const csvExisting: ExistingActivity = { ...activity({ avgCadence: null }), source: "csv" };
+    const stravaResult = mergeActivity(csvExisting, activity({ avgCadence: 168 }), "strava");
+    expect(stravaResult.source).toBe("strava");
+    expect(stravaResult.merged.avgCadence).toBe(168);
+
+    const fitExisting: ExistingActivity = { ...activity({ hrZoneSeconds: { z1: 900 } }), source: "fit" };
+    const overriddenByFit = mergeActivity(fitExisting, activity({ hrZoneSeconds: null }), "strava");
+    expect(overriddenByFit.source).toBe("fit");
+    expect(overriddenByFit.merged.hrZoneSeconds).toEqual({ z1: 900 });
+  });
 });

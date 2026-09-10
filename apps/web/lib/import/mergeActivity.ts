@@ -1,8 +1,11 @@
 import type { NormalizedActivityInput } from "./types";
 
-export type ActivitySource = "fit" | "csv" | "manual";
+export type ActivitySource = "fit" | "csv" | "manual" | "strava";
 
-const SOURCE_PRIORITY: Record<ActivitySource, number> = { fit: 3, csv: 2, manual: 1 };
+// Strava-relayed activities carry HR/cadence/elevation (richer than the
+// plain CSV export) but not the FIT file's per-zone HR breakdown, so they
+// rank between the two.
+const SOURCE_PRIORITY: Record<ActivitySource, number> = { fit: 4, strava: 3, csv: 2, manual: 1 };
 
 const MERGEABLE_FIELDS = [
   "sport",

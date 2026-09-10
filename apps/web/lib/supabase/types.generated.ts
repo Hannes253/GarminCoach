@@ -80,7 +80,7 @@ export interface Database {
         Row: {
           id: string;
           user_id: string;
-          source: "fit" | "csv" | "manual";
+          source: "fit" | "csv" | "manual" | "strava";
           sport: "run" | "bike" | "strength" | "other";
           sub_sport: string | null;
           dedup_key: string;
@@ -103,7 +103,7 @@ export interface Database {
         };
         Insert: Partial<Database["public"]["Tables"]["activities"]["Row"]> & {
           user_id: string;
-          source: "fit" | "csv" | "manual";
+          source: "fit" | "csv" | "manual" | "strava";
           sport: "run" | "bike" | "strength" | "other";
           dedup_key: string;
           start_time: string;
@@ -143,6 +143,26 @@ export interface Database {
           log_date: string;
         };
         Update: Partial<Database["public"]["Tables"]["daily_log"]["Row"]>;
+        Relationships: [];
+      };
+      strava_connection: {
+        Row: {
+          user_id: string;
+          athlete_id: number;
+          access_token: string;
+          refresh_token: string;
+          expires_at: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["strava_connection"]["Row"]> & {
+          user_id: string;
+          athlete_id: number;
+          access_token: string;
+          refresh_token: string;
+          expires_at: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["strava_connection"]["Row"]>;
         Relationships: [];
       };
     };

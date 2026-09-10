@@ -48,7 +48,7 @@ export function activityInputToInsert(params: {
   source: ActivitySource;
   dedupKey: string;
   userId: string;
-  importBatchId: string;
+  importBatchId: string | null;
   fileHash: string | null;
 }): ActivityInsert {
   const { activity, source, dedupKey, userId, importBatchId, fileHash } = params;
