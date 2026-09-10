@@ -21,4 +21,19 @@ describe("defaultTrainingScienceConfig", () => {
     expect(defaultTrainingScienceConfig.strengthTraining.countsAsLoad).toBe(true);
     expect(defaultTrainingScienceConfig.strengthTraining.isProgrammed).toBe(false);
   });
+
+  it("zone load weights increase monotonically from z1 to z5", () => {
+    const { zoneLoadWeights } = defaultTrainingScienceConfig.loadModel;
+    expect(zoneLoadWeights.z1).toBeLessThan(zoneLoadWeights.z2);
+    expect(zoneLoadWeights.z2).toBeLessThan(zoneLoadWeights.z3);
+    expect(zoneLoadWeights.z3).toBeLessThan(zoneLoadWeights.z4);
+    expect(zoneLoadWeights.z4).toBeLessThan(zoneLoadWeights.z5);
+  });
+
+  it("intensity zone buckets cover all five zones without overlap", () => {
+    const { easy, moderate, hard } = defaultTrainingScienceConfig.intensityDistribution.zoneBuckets;
+    const all = [...easy, ...moderate, ...hard];
+    expect(new Set(all).size).toBe(5);
+    expect(all.sort()).toEqual(["z1", "z2", "z3", "z4", "z5"]);
+  });
 });

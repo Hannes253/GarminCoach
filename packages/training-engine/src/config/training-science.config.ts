@@ -39,6 +39,25 @@ export interface TrainingScienceConfig {
     tsbFormula: "ctl_minus_atl";
     runLoadMethod: "duration_x_hrZoneIntensityFactor";
     strengthLoadMethod: "sessionRPE_x_durationMinutes";
+    // Per-zone multiplier for minutes spent in that zone, summed into one
+    // load score (Edwards' Summated Heart-Rate-Zone score). Zone "z0" in a
+    // device's raw time-in-zone breakdown (time below zone 1) is folded
+    // into the z1 weight if present.
+    zoneLoadWeights: Record<"z1" | "z2" | "z3" | "z4" | "z5", number>;
+    // Fallback intensity factor (multiplies duration directly) used only
+    // when an activity has no hr_zone_seconds breakdown at all (e.g. a CSV
+    // or Strava import) - deliberately conservative/neutral.
+    noZoneDataFallbackFactor: number;
+    zoneLoadSource: string;
+    source: string;
+  };
+
+  // TSB ("form") interpretation bands, standard Training Stress Balance
+  // convention (positive = fresh, very negative = high fatigue/injury risk).
+  formStatus: {
+    freshMin: number;
+    fatiguedMax: number;
+    veryFatiguedMax: number;
     source: string;
   };
 
@@ -46,6 +65,14 @@ export interface TrainingScienceConfig {
     targetEasyPct: number;
     targetHardPct: number;
     method: "polarized";
+    // Maps the 5 device HR zones onto Seiler's 3-zone polarized model.
+    // "z0" (time below zone 1) is folded into "easy" if present.
+    zoneBuckets: {
+      easy: Array<"z1" | "z2">;
+      moderate: Array<"z3">;
+      hard: Array<"z4" | "z5">;
+    };
+    zoneBucketsSource: string;
     source: string;
   };
 
@@ -105,15 +132,28 @@ export const defaultTrainingScienceConfig: TrainingScienceConfig = {
     tsbFormula: "ctl_minus_atl",
     runLoadMethod: "duration_x_hrZoneIntensityFactor",
     strengthLoadMethod: "sessionRPE_x_durationMinutes",
+    zoneLoadWeights: { z1: 1, z2: 2, z3: 3, z4: 4, z5: 5 },
+    noZoneDataFallbackFactor: 1,
+    zoneLoadSource: "Edwards' Summated Heart-Rate-Zone score (Edwards, 1993) - confirm weighting with app owner",
     source:
       "TODO: cite (session-RPE per Foster et al.; 28-day CTL window chosen per app owner's request, " +
       "deliberately shorter than TrainingPeaks' standard 42-day window - confirm)",
+  },
+
+  formStatus: {
+    freshMin: 5,
+    fatiguedMax: -10,
+    veryFatiguedMax: -30,
+    source: "Standard TSB interpretation bands (Coggan/TrainingPeaks convention) - confirm bucket edges with app owner",
   },
 
   intensityDistribution: {
     targetEasyPct: 80,
     targetHardPct: 20,
     method: "polarized",
+    zoneBuckets: { easy: ["z1", "z2"], moderate: ["z3"], hard: ["z4", "z5"] },
+    zoneBucketsSource:
+      "5-zone -> 3-zone mapping onto Seiler's polarized model - confirm z2/z3 boundary matches app owner's aerobic threshold",
     source: "TODO: cite (e.g. Seiler polarized training research)",
   },
 

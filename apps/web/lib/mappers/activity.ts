@@ -1,3 +1,4 @@
+import type { Activity as EngineActivity } from "@garmincoach/training-engine";
 import type { ActivitySource } from "@/lib/import/mergeActivity";
 import type { NormalizedActivityInput } from "@/lib/import/types";
 import type { Database } from "@/lib/supabase/types.generated";
@@ -40,6 +41,44 @@ export function rowToActivityInput(
     avgCadence: row.avg_cadence,
     calories: row.calories,
     source: row.source as ActivitySource,
+  };
+}
+
+export type EngineActivityRow = Pick<
+  ActivityRow,
+  | "id"
+  | "sport"
+  | "start_time"
+  | "duration_seconds"
+  | "distance_meters"
+  | "avg_pace_sec_per_km"
+  | "avg_hr"
+  | "max_hr"
+  | "hr_zone_seconds"
+  | "elevation_gain_meters"
+  | "avg_cadence"
+>;
+
+/**
+ * Maps a Supabase activities row (+ its RPE, fetched separately from
+ * activity_manual_fields since our hand-written Database type doesn't model
+ * the join) into the training-engine's domain Activity type, for the
+ * analysis/* functions.
+ */
+export function rowToEngineActivity(row: EngineActivityRow, rpe: number | null): EngineActivity {
+  return {
+    id: row.id,
+    sport: row.sport as EngineActivity["sport"],
+    startTime: row.start_time,
+    durationSeconds: row.duration_seconds,
+    distanceMeters: row.distance_meters,
+    avgPaceSecPerKm: row.avg_pace_sec_per_km,
+    avgHr: row.avg_hr,
+    maxHr: row.max_hr,
+    hrZoneSeconds: row.hr_zone_seconds as EngineActivity["hrZoneSeconds"],
+    elevationGainMeters: row.elevation_gain_meters,
+    avgCadence: row.avg_cadence,
+    rpe,
   };
 }
 
