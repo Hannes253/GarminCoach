@@ -30,6 +30,7 @@ export interface Database {
         };
         Insert: Partial<Database["public"]["Tables"]["user_settings"]["Row"]> & { id: string };
         Update: Partial<Database["public"]["Tables"]["user_settings"]["Row"]>;
+        Relationships: [];
       };
       import_batches: {
         Row: {
@@ -51,6 +52,7 @@ export interface Database {
           file_hash: string;
         };
         Update: Partial<Database["public"]["Tables"]["import_batches"]["Row"]>;
+        Relationships: [];
       };
       import_batch_items: {
         Row: {
@@ -72,6 +74,7 @@ export interface Database {
           status: "imported" | "duplicate_skipped" | "enriched_existing" | "error";
         };
         Update: Partial<Database["public"]["Tables"]["import_batch_items"]["Row"]>;
+        Relationships: [];
       };
       activities: {
         Row: {
@@ -107,6 +110,7 @@ export interface Database {
           duration_seconds: number;
         };
         Update: Partial<Database["public"]["Tables"]["activities"]["Row"]>;
+        Relationships: [];
       };
       activity_manual_fields: {
         Row: {
@@ -122,6 +126,7 @@ export interface Database {
           activity_id: string;
         };
         Update: Partial<Database["public"]["Tables"]["activity_manual_fields"]["Row"]>;
+        Relationships: [];
       };
       daily_log: {
         Row: {
@@ -138,7 +143,12 @@ export interface Database {
           log_date: string;
         };
         Update: Partial<Database["public"]["Tables"]["daily_log"]["Row"]>;
+        Relationships: [];
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 }
