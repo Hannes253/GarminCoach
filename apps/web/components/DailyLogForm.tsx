@@ -32,60 +32,67 @@ export function DailyLogForm({ logDate, initialSleepHours, initialSleepQuality, 
   }
 
   return (
-    <div className="flex flex-col gap-2 rounded-lg border border-black/10 p-4 dark:border-white/10">
-      <span className="text-sm font-medium">Schlaf letzte Nacht</span>
-      <div className="flex gap-2">
-        <label className="flex flex-1 items-center gap-2 text-xs">
-          <span className="shrink-0">Stunden</span>
-          <input
-            type="number"
-            step="0.5"
-            min="0"
-            max="14"
-            value={sleepHours}
-            onChange={(e) => {
-              setSleepHours(e.target.value);
-              setSaved(false);
-            }}
-            className="w-16 rounded border border-black/10 bg-background px-2 py-1 dark:border-white/20"
-          />
-        </label>
-        <label className="flex flex-1 items-center gap-2 text-xs">
-          <span className="shrink-0">Qualität</span>
-          <select
-            value={sleepQuality}
-            onChange={(e) => {
-              setSleepQuality(e.target.value);
-              setSaved(false);
-            }}
-            className="rounded border border-black/10 bg-background px-2 py-1 dark:border-white/20"
-          >
-            <option value="">–</option>
-            {[1, 2, 3, 4, 5].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </label>
+    <div className="overflow-hidden rounded-2xl bg-card">
+      <p className="px-4 pt-3.5 text-xs font-medium uppercase tracking-wide text-muted">Schlaf letzte Nacht</p>
+
+      <div className="flex items-center justify-between border-b border-separator px-4 py-3">
+        <span className="text-[15px]">Stunden</span>
+        <input
+          type="number"
+          step="0.5"
+          min="0"
+          max="14"
+          placeholder="–"
+          value={sleepHours}
+          onChange={(e) => {
+            setSleepHours(e.target.value);
+            setSaved(false);
+          }}
+          className="w-16 bg-transparent text-right text-[15px] text-muted placeholder:text-muted focus:text-foreground focus:outline-none"
+        />
       </div>
-      <input
-        value={note}
-        onChange={(e) => {
-          setNote(e.target.value);
-          setSaved(false);
-        }}
-        placeholder="Notiz (optional)"
-        className="rounded border border-black/10 bg-background px-2 py-1 text-xs dark:border-white/20"
-      />
-      <button
-        type="button"
-        onClick={handleSave}
-        disabled={isPending}
-        className="self-start rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background disabled:opacity-50"
-      >
-        {isPending ? "Speichert…" : saved ? "Gespeichert" : "Speichern"}
-      </button>
+
+      <div className="flex items-center justify-between border-b border-separator px-4 py-3">
+        <span className="text-[15px]">Qualität</span>
+        <select
+          value={sleepQuality}
+          onChange={(e) => {
+            setSleepQuality(e.target.value);
+            setSaved(false);
+          }}
+          className="bg-transparent text-right text-[15px] text-muted focus:text-foreground focus:outline-none"
+        >
+          <option value="">–</option>
+          {[1, 2, 3, 4, 5].map((n) => (
+            <option key={n} value={n}>
+              {n} / 5
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex items-center justify-between px-4 py-3">
+        <input
+          value={note}
+          onChange={(e) => {
+            setNote(e.target.value);
+            setSaved(false);
+          }}
+          placeholder="Notiz (optional)"
+          className="w-full bg-transparent text-[15px] placeholder:text-muted focus:outline-none"
+        />
+      </div>
+
+      <div className="px-4 pb-3.5">
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={isPending}
+          className="tap-shrink w-full rounded-xl bg-accent py-2.5 text-[15px] font-semibold text-accent-foreground disabled:opacity-50"
+        >
+          {isPending ? "Speichert…" : saved ? "Gespeichert ✓" : "Speichern"}
+        </button>
+      </div>
     </div>
   );
 }

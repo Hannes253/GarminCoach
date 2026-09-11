@@ -57,21 +57,25 @@ export function ActivityRow({ activity }: { activity: ActivityRowData }) {
   }
 
   return (
-    <div className="py-2">
+    <div className="px-4 py-3">
       <button
         type="button"
         onClick={() => setExpanded((e) => !e)}
-        className="flex w-full items-center justify-between text-left text-sm"
+        className="flex w-full items-center justify-between text-left"
       >
         <div>
-          <div className="font-medium">{SPORT_LABELS[activity.sport] ?? activity.sport}</div>
-          <div className="text-xs text-foreground/50">
+          <div className="text-[15px] font-medium">{SPORT_LABELS[activity.sport] ?? activity.sport}</div>
+          <div className="text-xs text-muted">
             {formatDate(activity.startTime)}
             {activity.rpe != null && ` · RPE ${activity.rpe}`}
           </div>
         </div>
-        <div className="text-right text-xs text-foreground/70">
-          {activity.distanceMeters != null && <div>{(activity.distanceMeters / 1000).toFixed(2)} km</div>}
+        <div className="text-right text-xs text-muted">
+          {activity.distanceMeters != null && (
+            <div className="text-[15px] font-medium text-foreground">
+              {(activity.distanceMeters / 1000).toFixed(2)} km
+            </div>
+          )}
           <div>{formatDuration(activity.durationSeconds)}</div>
           {pace && <div>{pace}</div>}
           {activity.avgHr != null && <div>{activity.avgHr} bpm</div>}
@@ -79,13 +83,13 @@ export function ActivityRow({ activity }: { activity: ActivityRowData }) {
       </button>
 
       {expanded && (
-        <div className="mt-2 flex flex-col gap-2 rounded-md bg-black/5 p-3 dark:bg-white/5">
-          <label className="flex items-center gap-2 text-xs">
-            <span className="w-20 shrink-0">RPE (1-10)</span>
+        <div className="mt-3 flex flex-col gap-2.5 rounded-xl bg-fill p-3">
+          <label className="flex items-center justify-between text-[13px]">
+            <span>RPE (1–10)</span>
             <select
               value={rpe}
               onChange={(e) => setRpe(e.target.value)}
-              className="rounded border border-black/10 bg-background px-2 py-1 dark:border-white/20"
+              className="rounded-lg bg-card px-2.5 py-1.5 text-[13px]"
             >
               <option value="">–</option>
               {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => (
@@ -95,20 +99,17 @@ export function ActivityRow({ activity }: { activity: ActivityRowData }) {
               ))}
             </select>
           </label>
-          <label className="flex items-center gap-2 text-xs">
-            <span className="w-20 shrink-0">Notiz</span>
-            <input
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-              className="flex-1 rounded border border-black/10 bg-background px-2 py-1 dark:border-white/20"
-              placeholder="z. B. Seitenstechen ab km 8"
-            />
-          </label>
+          <input
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            className="rounded-lg bg-card px-2.5 py-1.5 text-[13px] placeholder:text-muted focus:outline-none"
+            placeholder="Notiz, z. B. Seitenstechen ab km 8"
+          />
           <button
             type="button"
             onClick={handleSave}
             disabled={isPending}
-            className="self-start rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background disabled:opacity-50"
+            className="tap-shrink self-start rounded-full bg-accent px-3.5 py-1.5 text-[13px] font-semibold text-accent-foreground disabled:opacity-50"
           >
             {isPending ? "Speichert…" : "Speichern"}
           </button>

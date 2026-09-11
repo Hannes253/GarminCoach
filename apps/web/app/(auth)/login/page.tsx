@@ -9,9 +9,8 @@ function CallbackError() {
   if (searchParams.get("error") !== "auth") return null;
 
   return (
-    <p className="text-sm text-red-600">
-      Login-Link ist ungültig oder abgelaufen (z. B. schon einmal geöffnet). Bitte neuen Link
-      anfordern.
+    <p className="text-[13px] text-danger">
+      Login-Link ist ungültig oder abgelaufen (z. B. schon einmal geöffnet). Bitte neuen Link anfordern.
     </p>
   );
 }
@@ -32,17 +31,23 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-6 px-6">
-      <h1 className="text-xl font-semibold">GarminCoach</h1>
+    <main className="safe-top safe-bottom flex flex-1 flex-col items-center justify-center gap-8 bg-background px-6">
+      <div className="flex flex-col items-center gap-1.5">
+        <div className="flex h-16 w-16 items-center justify-center rounded-[22%] bg-accent text-2xl font-bold text-accent-foreground">
+          GC
+        </div>
+        <h1 className="text-2xl font-bold tracking-tight">GarminCoach</h1>
+        <p className="text-[13px] text-muted">Dein persönlicher Marathon-Trainings-Coach</p>
+      </div>
 
       <Suspense fallback={null}>
         <CallbackError />
       </Suspense>
 
       {status === "sent" ? (
-        <p className="text-center text-sm text-foreground/70">
+        <div className="w-full max-w-xs rounded-2xl bg-card p-4 text-center text-[15px] text-muted">
           Login-Link verschickt an {email}. Bitte E-Mail-Postfach prüfen.
-        </p>
+        </div>
       ) : (
         <form onSubmit={handleSubmit} className="flex w-full max-w-xs flex-col gap-3">
           <input
@@ -51,17 +56,17 @@ export default function LoginPage() {
             placeholder="E-Mail-Adresse"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded-md border border-black/10 px-3 py-2 text-sm dark:border-white/20"
+            className="rounded-2xl bg-card px-4 py-3 text-[15px] placeholder:text-muted focus:outline-none"
           />
           <button
             type="submit"
             disabled={status === "sending"}
-            className="rounded-md bg-foreground px-3 py-2 text-sm font-medium text-background disabled:opacity-50"
+            className="tap-shrink rounded-2xl bg-accent px-4 py-3 text-[15px] font-semibold text-accent-foreground disabled:opacity-50"
           >
             {status === "sending" ? "Sende Link…" : "Login-Link senden"}
           </button>
           {status === "error" && (
-            <p className="text-sm text-red-600">
+            <p className="text-center text-[13px] text-danger">
               Login-Link konnte nicht verschickt werden. Bitte erneut versuchen.
             </p>
           )}

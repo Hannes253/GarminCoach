@@ -11,25 +11,25 @@ export default async function ImportPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-lg font-semibold">Import</h1>
+      <header>
+        <h1 className="text-[32px] font-bold tracking-tight">Import</h1>
+      </header>
 
-      <div className="flex flex-col gap-2 rounded-lg border border-black/10 p-4 dark:border-white/10">
-        <span className="text-sm font-medium">Automatischer Import über Strava</span>
-        {params.strava_connected && (
-          <p className="text-sm text-green-600">Strava erfolgreich verbunden.</p>
-        )}
+      <section className="flex flex-col gap-2.5 rounded-2xl bg-card p-4">
+        <span className="text-[15px] font-medium">Automatischer Import über Strava</span>
+        {params.strava_connected && <p className="text-[13px] text-success">Strava erfolgreich verbunden.</p>}
         {params.strava_error && (
-          <p className="text-sm text-red-600">Strava-Verbindung fehlgeschlagen. Bitte erneut versuchen.</p>
+          <p className="text-[13px] text-danger">Strava-Verbindung fehlgeschlagen. Bitte erneut versuchen.</p>
         )}
         <StravaConnectStatus />
-      </div>
+      </section>
 
       <ImportUploader />
 
-      <div>
-        <h2 className="mb-2 text-sm font-semibold text-foreground/70">Importierte Aktivitäten</h2>
+      <section className="flex flex-col gap-2">
+        <h2 className="px-1 text-xs font-medium uppercase tracking-wide text-muted">Importierte Aktivitäten</h2>
         <ActivitiesList />
-      </div>
+      </section>
     </div>
   );
 }

@@ -28,40 +28,44 @@ export function RaceDateForm({ initialRaceDate, initialRaceName }: RaceDateFormP
   }
 
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-black/10 p-4 dark:border-white/10">
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium">Renndatum</span>
-        <input
-          type="date"
-          value={raceDate}
-          onChange={(e) => {
-            setRaceDate(e.target.value);
-            setSaved(false);
-          }}
-          className="rounded border border-black/10 bg-background px-2 py-1.5 dark:border-white/20"
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium">Rennname (optional)</span>
-        <input
-          type="text"
-          value={raceName}
-          onChange={(e) => {
-            setRaceName(e.target.value);
-            setSaved(false);
-          }}
-          placeholder="z. B. Berlin Marathon"
-          className="rounded border border-black/10 bg-background px-2 py-1.5 dark:border-white/20"
-        />
-      </label>
-      {error && <p className="text-xs text-red-600">{error}</p>}
+    <div className="flex flex-col gap-3">
+      <div className="overflow-hidden rounded-2xl bg-card">
+        <label className="flex items-center justify-between border-b border-separator px-4 py-3">
+          <span className="text-[15px]">Renndatum</span>
+          <input
+            type="date"
+            value={raceDate}
+            onChange={(e) => {
+              setRaceDate(e.target.value);
+              setSaved(false);
+            }}
+            className="bg-transparent text-right text-[15px] text-muted focus:text-foreground focus:outline-none"
+          />
+        </label>
+        <label className="flex items-center justify-between px-4 py-3">
+          <span className="text-[15px]">Rennname</span>
+          <input
+            type="text"
+            value={raceName}
+            onChange={(e) => {
+              setRaceName(e.target.value);
+              setSaved(false);
+            }}
+            placeholder="z. B. Berlin Marathon"
+            className="w-40 bg-transparent text-right text-[15px] placeholder:text-muted focus:outline-none"
+          />
+        </label>
+      </div>
+
+      {error && <p className="px-1 text-xs text-danger">{error}</p>}
+
       <button
         type="button"
         onClick={handleSave}
         disabled={isPending || raceDate === ""}
-        className="self-start rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background disabled:opacity-50"
+        className="tap-shrink rounded-xl bg-accent py-2.5 text-[15px] font-semibold text-accent-foreground disabled:opacity-50"
       >
-        {isPending ? "Speichert…" : saved ? "Gespeichert" : "Speichern"}
+        {isPending ? "Speichert…" : saved ? "Gespeichert ✓" : "Speichern"}
       </button>
     </div>
   );

@@ -6,16 +6,17 @@ export function WarningsList({ warnings }: { warnings: Warning[] }) {
   return (
     <div className="flex flex-col gap-2">
       {warnings.map((w, i) => (
-        <p
+        <div
           key={i}
-          className={`rounded-md border p-2 text-xs ${
-            w.severity === "critical"
-              ? "border-red-600/30 bg-red-600/10 text-red-700 dark:text-red-400"
-              : "border-orange-600/30 bg-orange-600/10 text-orange-700 dark:text-orange-400"
+          className={`flex items-start gap-2.5 rounded-2xl p-3.5 text-sm ${
+            w.severity === "critical" ? "bg-danger/10 text-danger" : "bg-warning/10 text-warning"
           }`}
         >
-          {w.message}
-        </p>
+          <span aria-hidden className="mt-0.5 text-base leading-none">
+            {w.severity === "critical" ? "⚠️" : "ℹ️"}
+          </span>
+          <p className="flex-1 leading-snug">{w.message}</p>
+        </div>
       ))}
     </div>
   );

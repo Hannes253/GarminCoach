@@ -7,7 +7,6 @@ import {
 } from "@garmincoach/training-engine";
 import { DailyLogWidget } from "@/components/DailyLogWidget";
 import { FormStatusBadge } from "@/components/FormStatusBadge";
-import { SignOutButton } from "@/components/SignOutButton";
 import { WarningsList } from "@/components/WarningsList";
 import { loadEngineActivities } from "@/lib/data/activities";
 
@@ -23,32 +22,31 @@ export default async function HomePage() {
   const warnings = aggregateWarnings(weeklyVolume, loadSeries, config);
 
   return (
-    <div className="flex flex-col gap-4">
-      <header className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Heute</h1>
-        <SignOutButton />
+    <div className="flex flex-col gap-6">
+      <header>
+        <h1 className="text-[32px] font-bold tracking-tight">Heute</h1>
       </header>
 
       <DailyLogWidget />
 
       {activities.length === 0 ? (
-        <p className="text-sm text-foreground/60">
+        <div className="rounded-2xl bg-card p-4 text-sm text-muted">
           Noch keine Aktivitäten importiert. Geh auf die Import-Seite, um loszulegen.
-        </p>
+        </div>
       ) : (
         <>
           {latestLoad && formStatus && (
-            <div className="rounded-lg border border-black/10 p-4 dark:border-white/10">
-              <p className="text-xs text-foreground/50">Formstand</p>
+            <div className="rounded-2xl bg-card p-4">
+              <p className="text-xs font-medium uppercase tracking-wide text-muted">Formstand</p>
               <FormStatusBadge status={formStatus} />
             </div>
           )}
 
           <WarningsList warnings={warnings} />
 
-          <p className="text-sm text-foreground/60">
-            Die heutige Einheit steht hier, sobald Phase 3 (Planung) fertig ist.
-          </p>
+          <div className="rounded-2xl bg-card p-4 text-sm text-muted">
+            Die heutige Einheit steht hier, sobald der Plan zum Abhaken verknüpft ist.
+          </div>
         </>
       )}
     </div>

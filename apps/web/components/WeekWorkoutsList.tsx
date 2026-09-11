@@ -22,25 +22,36 @@ function weekdayLabel(dateStr: string): string {
   return WEEKDAY_LABELS[isoDay]!;
 }
 
+function isToday(dateStr: string): boolean {
+  return dateStr === new Date().toISOString().slice(0, 10);
+}
+
 export function WeekWorkoutsList({ workouts }: { workouts: WorkoutRow[] }) {
   return (
-    <div className="flex flex-col gap-1">
-      {workouts.map((w) => (
-        <div
-          key={w.id}
-          className={`flex items-center gap-2 rounded-md border p-2 text-sm ${
-            w.workout_type === "rest"
-              ? "border-black/5 text-foreground/40 dark:border-white/5"
-              : "border-black/10 dark:border-white/10"
-          }`}
-        >
-          <span className="w-6 shrink-0 text-xs text-foreground/60">{weekdayLabel(w.date)}</span>
-          <span className="flex-1">{WORKOUT_LABELS[w.workout_type]}</span>
-          {w.target_distance_km != null && (
-            <span className="text-xs text-foreground/60">{w.target_distance_km} km</span>
-          )}
-        </div>
-      ))}
+    <div className="overflow-hidden rounded-2xl bg-card">
+      {workouts.map((w, i) => {
+        const isRest = w.workout_type === "rest";
+        return (
+          <div
+            key={w.id}
+            className={`flex items-center gap-3 px-4 py-3 ${
+              i < workouts.length - 1 ? "border-b border-separator" : ""
+            } ${isRest ? "opacity-50" : ""}`}
+          >
+            <span
+              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold ${
+                isToday(w.date) ? "bg-accent text-accent-foreground" : "bg-fill text-muted"
+              }`}
+            >
+              {weekdayLabel(w.date)}
+            </span>
+            <span className="flex-1 text-[15px]">{WORKOUT_LABELS[w.workout_type]}</span>
+            {w.target_distance_km != null && (
+              <span className="text-[13px] text-muted">{w.target_distance_km} km</span>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -35,14 +35,16 @@ export default async function PlanPage() {
 
   if (!settings?.race_date) {
     return (
-      <div className="flex flex-col gap-4">
-        <h1 className="text-lg font-semibold">Plan</h1>
-        <p className="text-sm text-foreground/60">
+      <div className="flex flex-col gap-6">
+        <header>
+          <h1 className="text-[32px] font-bold tracking-tight">Plan</h1>
+        </header>
+        <div className="rounded-2xl bg-card p-4 text-sm text-muted">
           Für einen Trainingsplan wird zuerst ein Renndatum benötigt.
-        </p>
+        </div>
         <Link
           href="/settings"
-          className="self-start rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background"
+          className="tap-shrink self-start rounded-full bg-accent px-4 py-2 text-[15px] font-semibold text-accent-foreground"
         >
           Zu den Einstellungen
         </Link>
@@ -59,12 +61,14 @@ export default async function PlanPage() {
 
   if (!plan) {
     return (
-      <div className="flex flex-col gap-4">
-        <h1 className="text-lg font-semibold">Plan</h1>
-        <p className="text-sm text-foreground/60">
+      <div className="flex flex-col gap-6">
+        <header>
+          <h1 className="text-[32px] font-bold tracking-tight">Plan</h1>
+        </header>
+        <div className="rounded-2xl bg-card p-4 text-sm text-muted">
           Noch kein Trainingsplan erstellt. Renndatum: {settings.race_name ? `${settings.race_name}, ` : ""}
           {settings.race_date}
-        </p>
+        </div>
         <GeneratePlanButton hasPlan={false} />
       </div>
     );
@@ -98,32 +102,35 @@ export default async function PlanPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">Plan</h1>
+      <header className="flex items-start justify-between gap-3">
+        <div>
+          <h1 className="text-[32px] font-bold tracking-tight">Plan</h1>
+          <p className="mt-0.5 text-[13px] text-muted">
+            {settings.race_name ? `${settings.race_name} · ` : ""}
+            {plan.race_date}
+          </p>
+        </div>
         <GeneratePlanButton hasPlan />
       </header>
 
-      <p className="text-sm text-foreground/60">
-        Renntag: {settings.race_name ? `${settings.race_name}, ` : ""}
-        {plan.race_date}
-      </p>
-
       {currentWeek && (
         <section className="flex flex-col gap-2">
-          <h2 className="text-sm font-medium">
-            Woche {currentWeek.week_number}
-            {currentWeek.is_deload ? " · Deload" : ""} · ab {currentWeek.week_start_date}
+          <h2 className="flex items-baseline justify-between px-1">
+            <span className="text-xs font-medium uppercase tracking-wide text-muted">
+              Woche {currentWeek.week_number}
+              {currentWeek.is_deload ? " · Deload" : ""}
+            </span>
+            <span className="text-xs text-muted">
+              {currentWeek.target_volume_km} km
+              {currentWeek.target_long_run_km != null ? ` · LR ${currentWeek.target_long_run_km} km` : ""}
+            </span>
           </h2>
-          <p className="text-xs text-foreground/60">
-            Ziel: {currentWeek.target_volume_km} km
-            {currentWeek.target_long_run_km != null ? ` (davon Long Run ${currentWeek.target_long_run_km} km)` : ""}
-          </p>
           <WeekWorkoutsList workouts={workouts ?? []} />
         </section>
       )}
 
       <section className="flex flex-col gap-2">
-        <h2 className="text-sm font-medium">Makrozyklus</h2>
+        <h2 className="px-1 text-xs font-medium uppercase tracking-wide text-muted">Makrozyklus</h2>
         <PlanMacrocycle phases={phases ?? []} />
       </section>
     </div>

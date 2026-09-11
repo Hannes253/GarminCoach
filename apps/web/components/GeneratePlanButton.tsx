@@ -22,16 +22,16 @@ export function GeneratePlanButton({ hasPlan }: { hasPlan: boolean }) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col items-end gap-1">
       <button
         type="button"
         onClick={handleClick}
         disabled={isPending}
-        className="self-start rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background disabled:opacity-50"
+        className="tap-shrink rounded-full bg-accent px-4 py-2 text-[13px] font-semibold text-accent-foreground disabled:opacity-50"
       >
-        {isPending ? "Erstellt…" : hasPlan ? "Plan neu berechnen" : "Plan erstellen"}
+        {isPending ? "Erstellt…" : hasPlan ? "Neu berechnen" : "Plan erstellen"}
       </button>
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && <p className="max-w-[14rem] text-right text-xs text-danger">{error}</p>}
     </div>
   );
 }
