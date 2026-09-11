@@ -39,7 +39,7 @@ export default async function PlanPage() {
         <header>
           <h1 className="text-[32px] font-bold tracking-tight">Plan</h1>
         </header>
-        <div className="rounded-2xl bg-card p-4 text-sm text-muted">
+        <div className="rounded-[var(--radius-card)] bg-card p-4 text-sm text-muted">
           Für einen Trainingsplan wird zuerst ein Renndatum benötigt.
         </div>
         <Link
@@ -65,7 +65,7 @@ export default async function PlanPage() {
         <header>
           <h1 className="text-[32px] font-bold tracking-tight">Plan</h1>
         </header>
-        <div className="rounded-2xl bg-card p-4 text-sm text-muted">
+        <div className="rounded-[var(--radius-card)] bg-card p-4 text-sm text-muted">
           Noch kein Trainingsplan erstellt. Renndatum: {settings.race_name ? `${settings.race_name}, ` : ""}
           {settings.race_date}
         </div>
@@ -107,6 +107,23 @@ export default async function PlanPage() {
     .order("triggered_at", { ascending: false })
     .limit(3);
 
+  const firstPhase = (phases ?? [])[0];
+  const blockProgressPct = firstPhase
+    ? Math.round(
+        Math.min(
+          100,
+          Math.max(
+            0,
+            ((new Date(today).getTime() - new Date(firstPhase.start_date).getTime()) /
+              (new Date(plan.race_date).getTime() - new Date(firstPhase.start_date).getTime())) *
+              100,
+          ),
+        ),
+      )
+    : 0;
+  const ringRadius = 54;
+  const ringCircumference = 2 * Math.PI * ringRadius;
+
   return (
     <div className="flex flex-col gap-6">
       <header className="flex items-start justify-between gap-3">
@@ -120,10 +137,37 @@ export default async function PlanPage() {
         <GeneratePlanButton hasPlan />
       </header>
 
+      {firstPhase && (
+        <div className="card-hover flex flex-col items-center rounded-[var(--radius-card)] bg-card p-6">
+          <div className="relative h-40 w-40">
+            <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90">
+              <circle cx="60" cy="60" r={ringRadius} stroke="var(--fill)" strokeWidth="10" fill="transparent" />
+              <circle
+                cx="60"
+                cy="60"
+                r={ringRadius}
+                stroke="var(--accent)"
+                strokeWidth="10"
+                fill="transparent"
+                strokeDasharray={ringCircumference}
+                strokeDashoffset={ringCircumference * (1 - blockProgressPct / 100)}
+                strokeLinecap="round"
+                style={{ transition: "stroke-dashoffset 0.6s ease-out" }}
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+              <span className="text-3xl font-bold">{blockProgressPct}%</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-muted">Trainingsblock</span>
+            </div>
+          </div>
+          <p className="mt-3 text-[13px] text-muted">bis {plan.race_date}</p>
+        </div>
+      )}
+
       {recentAdjustments != null && recentAdjustments.length > 0 && (
         <section className="flex flex-col gap-2">
           <h2 className="px-1 text-xs font-medium uppercase tracking-wide text-muted">Letzte Anpassung</h2>
-          <div className="flex flex-col gap-2 rounded-2xl bg-card p-4">
+          <div className="flex flex-col gap-2 rounded-[var(--radius-card)] bg-card p-4">
             {recentAdjustments.map((adjustment) => (
               <p key={adjustment.id} className="text-[13px] leading-snug text-foreground">
                 {adjustment.rationale_text}
@@ -134,7 +178,7 @@ export default async function PlanPage() {
       )}
 
       {currentWeek && currentWeek.week_start_date > today && (
-        <div className="rounded-2xl bg-card p-4 text-sm text-muted">
+        <div className="rounded-[var(--radius-card)] bg-card p-4 text-sm text-muted">
           Der strukturierte Trainingsplan startet am {currentWeek.week_start_date}. Bis dahin: frei und locker
           laufen, ohne feste Vorgabe.
         </div>

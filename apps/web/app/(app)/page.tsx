@@ -41,13 +41,13 @@ export default async function HomePage() {
       <TodaysWorkoutCard workout={todaysWorkout} />
 
       {activities.length === 0 ? (
-        <div className="rounded-2xl bg-card p-4 text-sm text-muted">
+        <div className="rounded-[var(--radius-card)] bg-card p-4 text-sm text-muted">
           Noch keine Aktivitäten importiert. Geh auf die Import-Seite, um loszulegen.
         </div>
       ) : (
         <>
           {latestLoad && formStatus && (
-            <div className="rounded-2xl bg-card p-4">
+            <div className="rounded-[var(--radius-card)] bg-card p-4">
               <p className="text-xs font-medium uppercase tracking-wide text-muted">Formstand</p>
               <FormStatusBadge status={formStatus} />
             </div>

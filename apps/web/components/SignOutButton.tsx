@@ -17,7 +17,7 @@ export function SignOutButton() {
     <button
       type="button"
       onClick={handleSignOut}
-      className="tap-shrink w-full rounded-2xl bg-card px-4 py-3.5 text-center text-[15px] font-medium text-danger"
+      className="tap-shrink w-full rounded-[var(--radius-card)] bg-card px-4 py-3.5 text-center text-[15px] font-medium text-danger"
     >
       Abmelden
     </button>

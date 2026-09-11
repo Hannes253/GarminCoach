@@ -8,7 +8,7 @@ export function WarningsList({ warnings }: { warnings: Warning[] }) {
       {warnings.map((w, i) => (
         <div
           key={i}
-          className={`flex items-start gap-2.5 rounded-2xl p-3.5 text-sm ${
+          className={`flex items-start gap-2.5 rounded-[var(--radius-card)] p-3.5 text-sm ${
             w.severity === "critical" ? "bg-danger/10 text-danger" : "bg-warning/10 text-warning"
           }`}
         >

@@ -52,7 +52,7 @@ export default async function WeekPage({ params }: { params: Promise<{ weekId: s
         {week.target_long_run_km != null ? ` (davon Long Run ${week.target_long_run_km} km)` : ""}
       </p>
 
-      <div className="divide-y divide-separator overflow-hidden rounded-2xl bg-card">
+      <div className="divide-y divide-separator overflow-hidden rounded-[var(--radius-card)] bg-card">
         {(workouts ?? []).map((workout) => (
           <WorkoutStatusRow key={workout.id} workout={workout} />
         ))}

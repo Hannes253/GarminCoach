@@ -32,7 +32,7 @@ export function DailyLogForm({ logDate, initialSleepHours, initialSleepQuality, 
   }
 
   return (
-    <div className="overflow-hidden rounded-2xl bg-card">
+    <div className="overflow-hidden rounded-[var(--radius-card)] bg-card">
       <p className="px-4 pt-3.5 text-xs font-medium uppercase tracking-wide text-muted">Schlaf letzte Nacht</p>
 
       <div className="flex items-center justify-between border-b border-separator px-4 py-3">

@@ -45,7 +45,7 @@ export default function LoginPage() {
       </Suspense>
 
       {status === "sent" ? (
-        <div className="w-full max-w-xs rounded-2xl bg-card p-4 text-center text-[15px] text-muted">
+        <div className="w-full max-w-xs rounded-[var(--radius-card)] bg-card p-4 text-center text-[15px] text-muted">
           Login-Link verschickt an {email}. Bitte E-Mail-Postfach prüfen.
         </div>
       ) : (
@@ -56,12 +56,12 @@ export default function LoginPage() {
             placeholder="E-Mail-Adresse"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="rounded-2xl bg-card px-4 py-3 text-[15px] placeholder:text-muted focus:outline-none"
+            className="rounded-[var(--radius-card)] bg-card px-4 py-3 text-[15px] placeholder:text-muted focus:outline-none"
           />
           <button
             type="submit"
             disabled={status === "sending"}
-            className="tap-shrink rounded-2xl bg-accent px-4 py-3 text-[15px] font-semibold text-accent-foreground disabled:opacity-50"
+            className="tap-shrink rounded-[var(--radius-card)] bg-accent px-4 py-3 text-[15px] font-semibold text-accent-foreground disabled:opacity-50"
           >
             {status === "sending" ? "Sende Link…" : "Login-Link senden"}
           </button>

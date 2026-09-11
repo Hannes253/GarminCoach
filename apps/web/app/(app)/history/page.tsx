@@ -35,7 +35,7 @@ function Bar({ widthPct, valueLabel }: { widthPct: number; valueLabel: string })
 
 function Card({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <section className="flex flex-col gap-2.5 rounded-2xl bg-card p-4">
+    <section className="flex flex-col gap-2.5 rounded-[var(--radius-card)] bg-card p-4">
       <h2 className="text-xs font-medium uppercase tracking-wide text-muted">{title}</h2>
       {children}
     </section>
@@ -68,7 +68,7 @@ export default async function HistoryPage() {
         <header>
           <h1 className="text-[32px] font-bold tracking-tight">Verlauf</h1>
         </header>
-        <div className="rounded-2xl bg-card p-4 text-sm text-muted">
+        <div className="rounded-[var(--radius-card)] bg-card p-4 text-sm text-muted">
           Noch keine Aktivitäten vorhanden. Importier zuerst Daten auf der Import-Seite.
         </div>
       </div>

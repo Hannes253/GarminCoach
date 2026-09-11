@@ -15,7 +15,7 @@ export default async function ImportPage({
         <h1 className="text-[32px] font-bold tracking-tight">Import</h1>
       </header>
 
-      <section className="flex flex-col gap-2.5 rounded-2xl bg-card p-4">
+      <section className="flex flex-col gap-2.5 rounded-[var(--radius-card)] bg-card p-4">
         <span className="text-[15px] font-medium">Automatischer Import über Strava</span>
         {params.strava_connected && <p className="text-[13px] text-success">Strava erfolgreich verbunden.</p>}
         {params.strava_error && (

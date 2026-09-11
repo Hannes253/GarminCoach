@@ -19,7 +19,7 @@ export async function ActivitiesList() {
   ]);
 
   if (!activities || activities.length === 0) {
-    return <p className="rounded-2xl bg-card p-4 text-sm text-muted">Noch keine Aktivitäten importiert.</p>;
+    return <p className="rounded-[var(--radius-card)] bg-card p-4 text-sm text-muted">Noch keine Aktivitäten importiert.</p>;
   }
 
   const manualByActivityId = new Map((manualFields ?? []).map((m) => [m.activity_id, m]));
@@ -40,7 +40,7 @@ export async function ActivitiesList() {
   });
 
   return (
-    <div className="divide-y divide-separator overflow-hidden rounded-2xl bg-card">
+    <div className="divide-y divide-separator overflow-hidden rounded-[var(--radius-card)] bg-card">
       {rows.map((activity) => (
         <ActivityRow key={activity.id} activity={activity} />
       ))}

@@ -39,7 +39,7 @@ export function ImportUploader() {
   const percent = progress && progress.total > 0 ? Math.round((progress.processed / progress.total) * 100) : 0;
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl bg-card p-4">
+    <div className="flex flex-col gap-3 rounded-[var(--radius-card)] bg-card p-4">
       <label className="flex flex-col gap-2.5">
         <span className="text-[15px] font-medium">Garmin-Export hochladen</span>
         <span className="tap-shrink inline-flex w-fit cursor-pointer items-center rounded-full bg-fill px-4 py-2 text-[13px] font-medium text-accent">

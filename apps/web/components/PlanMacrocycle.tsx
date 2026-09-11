@@ -29,7 +29,7 @@ function formatDate(dateStr: string): string {
 
 export function PlanMacrocycle({ phases }: { phases: PhaseRow[] }) {
   return (
-    <div className="overflow-hidden rounded-2xl bg-card">
+    <div className="overflow-hidden rounded-[var(--radius-card)] bg-card">
       {phases.map((phase, i) => (
         <div
           key={phase.id}

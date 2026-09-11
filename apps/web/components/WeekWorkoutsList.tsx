@@ -28,7 +28,7 @@ function isToday(dateStr: string): boolean {
 
 export function WeekWorkoutsList({ workouts }: { workouts: WorkoutRow[] }) {
   return (
-    <div className="overflow-hidden rounded-2xl bg-card">
+    <div className="overflow-hidden rounded-[var(--radius-card)] bg-card">
       {workouts.map((w, i) => {
         const isRest = w.workout_type === "rest";
         return (

@@ -15,7 +15,7 @@ export function TodaysWorkoutCard({ workout }: { workout: TodaysWorkout | null }
   const isRest = workout.workout_type === "rest";
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-2xl bg-card p-4">
+    <div className="card-hover flex items-center justify-between gap-3 rounded-[var(--radius-card)] bg-card p-4">
       <div>
         <p className="text-xs font-medium uppercase tracking-wide text-muted">Heutige Einheit</p>
         <p className="mt-1 text-2xl font-semibold tracking-tight">{WORKOUT_LABELS[workout.workout_type]}</p>

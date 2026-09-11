@@ -29,7 +29,7 @@ export function RaceDateForm({ initialRaceDate, initialRaceName }: RaceDateFormP
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="overflow-hidden rounded-2xl bg-card">
+      <div className="overflow-hidden rounded-[var(--radius-card)] bg-card">
         <label className="flex items-center justify-between border-b border-separator px-4 py-3">
           <span className="text-[15px]">Renndatum</span>
           <input
