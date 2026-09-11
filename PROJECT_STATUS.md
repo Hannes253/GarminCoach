@@ -58,10 +58,10 @@ Migrationen werden **manuell** vom Nutzer im Supabase SQL-Editor ausgeführt (ke
 | `0001_init.sql` | user_settings, activities, import_batches/items, activity_manual_fields, daily_log | ✅ ja (Phase 0/1) |
 | `0002_strava_integration.sql` | strava_connection, source-Enum-Erweiterung | ✅ ja |
 | `0003_planning.sql` | training_plans, plan_phases, plan_weeks, planned_workouts | ✅ ja (bestätigt) |
-| `0004_adaptation.sql` | plan_adjustments (Anpassungs-Log) | ⚠️ **wahrscheinlich noch offen** — unbedingt beim Nutzer nachfragen/erinnern |
-| `0005_one_active_plan.sql` | Partial-Unique-Index: max. 1 aktiver Plan pro Nutzer | ⚠️ **wahrscheinlich noch offen** — unbedingt beim Nutzer nachfragen/erinnern |
+| `0004_adaptation.sql` | plan_adjustments (Anpassungs-Log) | ✅ ja (bestätigt) |
+| `0005_one_active_plan.sql` | Partial-Unique-Index: max. 1 aktiver Plan pro Nutzer | ✅ ja (bestätigt) |
 
-**Erste Aktion in einer neuen Session: beim Nutzer nachfragen, ob 0004 und 0005 schon im Supabase SQL-Editor gelaufen sind.** Ohne 0004 schlägt die komplette Anpassungslogik (Phase 4) mit einem DB-Fehler fehl.
+Alle 5 Migrationen sind ausgeführt. Phase 4 (Anpassungslogik) ist damit vollständig produktionsfähig.
 
 ## Bereits eingerichtete externe Dienste (vom Nutzer, mit Anleitung)
 
