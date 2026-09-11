@@ -6,3 +6,5 @@ export * from "./analysis/intensity";
 export * from "./analysis/efficiency";
 export * from "./analysis/longRun";
 export * from "./analysis/warnings";
+export * from "./planning/periodization";
+export * from "./planning/workoutGenerator";

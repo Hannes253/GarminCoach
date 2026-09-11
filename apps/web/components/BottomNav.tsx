@@ -8,6 +8,7 @@ const items = [
   { href: "/history", label: "Verlauf" },
   { href: "/import", label: "Import" },
   { href: "/plan", label: "Plan" },
+  { href: "/settings", label: "Einstellungen" },
 ];
 
 export function BottomNav() {

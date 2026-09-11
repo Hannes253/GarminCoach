@@ -15,6 +15,8 @@
  * any function signature.
  */
 
+import type { PlanPhaseType, WorkoutType } from "../types";
+
 export type ZoneMethodology = "threshold_relative" | "pct_hrr" | "pct_hrmax";
 
 export interface TrainingScienceConfig {
@@ -108,6 +110,27 @@ export interface TrainingScienceConfig {
     countsAsLoad: boolean;
     isProgrammed: boolean;
   };
+
+  planning: {
+    // Fallback ceiling for weekly running volume when the plan isn't
+    // anchored to a race-time goal (this app deliberately has none in v1).
+    // A generic "comfortable recreational marathon finish" target - the
+    // single most made-up number in this whole config, confirm with the
+    // app owner before relying on it.
+    defaultPeakWeeklyVolumeKm: number;
+    // Long run as a fraction of that week's total volume.
+    longRunPctOfWeeklyVolume: number;
+    longRunMaxKm: number;
+    // Race-week volume as a fraction of the last pre-taper week's volume.
+    taperRaceWeekVolumePct: number;
+    // Fixed Monday-Sunday workout-type pattern per phase. The volume
+    // generator splits that week's target km across every non-rest slot
+    // (long_run gets its own share, the rest split evenly across the
+    // remaining slots - quality sessions are not weighted differently by
+    // distance in v1, only by effort/pace target).
+    weeklyTemplates: Record<PlanPhaseType, WorkoutType[]>;
+    source: string;
+  };
 }
 
 export const defaultTrainingScienceConfig: TrainingScienceConfig = {
@@ -188,5 +211,21 @@ export const defaultTrainingScienceConfig: TrainingScienceConfig = {
   strengthTraining: {
     countsAsLoad: true,
     isProgrammed: false,
+  },
+
+  planning: {
+    defaultPeakWeeklyVolumeKm: 60,
+    longRunPctOfWeeklyVolume: 0.32,
+    longRunMaxKm: 32,
+    taperRaceWeekVolumePct: 0.4,
+    weeklyTemplates: {
+      base: ["rest", "easy", "easy", "rest", "easy", "rest", "long_run"],
+      build: ["rest", "tempo", "easy", "easy", "rest", "easy", "long_run"],
+      specific: ["rest", "intervals", "easy", "tempo", "rest", "easy", "long_run"],
+      taper: ["rest", "tempo", "easy", "rest", "rest", "easy", "long_run"],
+    },
+    source:
+      "TODO: cite - generic recreational-marathon weekly structure and peak-volume guideline, " +
+      "not calibrated to the app owner's goals; confirm before Phase 3 is considered done",
   },
 };

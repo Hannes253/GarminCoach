@@ -145,6 +145,98 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["daily_log"]["Row"]>;
         Relationships: [];
       };
+      training_plans: {
+        Row: {
+          id: string;
+          user_id: string;
+          race_date: string;
+          status: "active" | "superseded" | "draft";
+          generation_reason: "initial" | "regression_after_break" | "manual_regenerate";
+          superseded_by_plan_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["training_plans"]["Row"]> & {
+          user_id: string;
+          race_date: string;
+          generation_reason: "initial" | "regression_after_break" | "manual_regenerate";
+        };
+        Update: Partial<Database["public"]["Tables"]["training_plans"]["Row"]>;
+        Relationships: [];
+      };
+      plan_phases: {
+        Row: {
+          id: string;
+          user_id: string;
+          plan_id: string;
+          phase_type: "base" | "build" | "specific" | "taper";
+          start_date: string;
+          end_date: string;
+          sequence_order: number;
+          target_weekly_volume_km: number | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["plan_phases"]["Row"]> & {
+          user_id: string;
+          plan_id: string;
+          phase_type: "base" | "build" | "specific" | "taper";
+          start_date: string;
+          end_date: string;
+          sequence_order: number;
+        };
+        Update: Partial<Database["public"]["Tables"]["plan_phases"]["Row"]>;
+        Relationships: [];
+      };
+      plan_weeks: {
+        Row: {
+          id: string;
+          user_id: string;
+          phase_id: string;
+          week_start_date: string;
+          week_number: number;
+          is_deload: boolean;
+          target_volume_km: number;
+          target_long_run_km: number | null;
+          status: "planned" | "active" | "completed";
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["plan_weeks"]["Row"]> & {
+          user_id: string;
+          phase_id: string;
+          week_start_date: string;
+          week_number: number;
+          target_volume_km: number;
+        };
+        Update: Partial<Database["public"]["Tables"]["plan_weeks"]["Row"]>;
+        Relationships: [];
+      };
+      planned_workouts: {
+        Row: {
+          id: string;
+          user_id: string;
+          plan_week_id: string;
+          date: string;
+          sequence_in_week: number;
+          workout_type: "easy" | "long_run" | "tempo" | "intervals" | "recovery" | "rest";
+          target_distance_km: number | null;
+          target_duration_minutes: number | null;
+          target_pace_range: Json | null;
+          target_hr_zone: "z1" | "z2" | "z3" | "z4" | "z5" | null;
+          status: "planned" | "completed" | "missed" | "skipped_replanned" | "modified";
+          completed_activity_id: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["planned_workouts"]["Row"]> & {
+          user_id: string;
+          plan_week_id: string;
+          date: string;
+          sequence_in_week: number;
+          workout_type: "easy" | "long_run" | "tempo" | "intervals" | "recovery" | "rest";
+        };
+        Update: Partial<Database["public"]["Tables"]["planned_workouts"]["Row"]>;
+        Relationships: [];
+      };
       strava_connection: {
         Row: {
           user_id: string;
