@@ -3,7 +3,13 @@ import { computeDedupKey } from "@/lib/import/dedupKey";
 import { mergeActivity } from "@/lib/import/mergeActivity";
 import { activityInputToInsert, rowToActivityInput, type ExistingActivityRow } from "@/lib/mappers/activity";
 import { createServiceClient } from "@/lib/supabase/service";
-import { fetchStravaActivity, normalizeStravaActivity, refreshAccessToken } from "@/lib/strava/client";
+import {
+  fetchStravaActivity,
+  fetchStravaActivityZones,
+  hrZoneSecondsFromStravaZones,
+  normalizeStravaActivity,
+  refreshAccessToken,
+} from "@/lib/strava/client";
 
 /**
  * One-time subscription verification handshake. Strava calls this with
@@ -77,6 +83,19 @@ export async function POST(request: Request) {
   try {
     const stravaActivity = await fetchStravaActivity(event.object_id, accessToken);
     const normalized = normalizeStravaActivity(stravaActivity);
+
+    // Best-effort enrichment: only worth asking for zones if the activity
+    // has HR data at all, and a failure here must never block ingestion of
+    // the activity itself.
+    if (stravaActivity.average_heartrate != null) {
+      try {
+        const zones = await fetchStravaActivityZones(event.object_id, accessToken);
+        normalized.hrZoneSeconds = hrZoneSecondsFromStravaZones(zones);
+      } catch (err) {
+        console.error("Strava zones fetch failed, continuing without zone data", err);
+      }
+    }
+
     const dedupKey = computeDedupKey(normalized);
 
     const { data: existingRow } = await supabase

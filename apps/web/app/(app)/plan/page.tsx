@@ -133,6 +133,13 @@ export default async function PlanPage() {
         </section>
       )}
 
+      {currentWeek && currentWeek.week_start_date > today && (
+        <div className="rounded-2xl bg-card p-4 text-sm text-muted">
+          Der strukturierte Trainingsplan startet am {currentWeek.week_start_date}. Bis dahin: frei und locker
+          laufen, ohne feste Vorgabe.
+        </div>
+      )}
+
       {currentWeek && (
         <section className="flex flex-col gap-2">
           <Link href={`/week/${currentWeek.id}`} className="flex items-baseline justify-between px-1">

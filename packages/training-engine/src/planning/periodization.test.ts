@@ -6,7 +6,7 @@ import { generatePlan } from "./periodization";
 const config = defaultTrainingScienceConfig;
 
 describe("generatePlan", () => {
-  it("real-user scenario: ~12 months out, rebuilding from <20km/week", () => {
+  it("real-user scenario: race ~12 months out, structured window capped, rebuilding from <20km/week", () => {
     const { plan, weeks } = generatePlan({
       raceDate: "2027-09-26", // Berlin Marathon
       today: "2026-09-11",
@@ -46,7 +46,7 @@ describe("generatePlan", () => {
       }
     }
 
-    // At least one deload week occurs given a ~12 month lead time.
+    // At least one deload week occurs within the ~24-week structured window.
     expect(weeks.some((w) => w.isDeload)).toBe(true);
 
     // Long run never exceeds the configured cap.
@@ -67,6 +67,42 @@ describe("generatePlan", () => {
 
     // Week numbers are sequential starting at 1.
     expect(weeks.map((w) => w.weekNumber)).toEqual(weeks.map((_, i) => i + 1));
+  });
+
+  it("caps the structured window at structuredWindowWeeks before the race when the race is far out", () => {
+    const { plan } = generatePlan({
+      raceDate: "2027-09-26", // Berlin Marathon, ~12 months from "today" below
+      today: "2026-09-11",
+      currentWeeklyVolumeKm: 18,
+      config,
+    });
+
+    const firstPhase = plan.phases[0]!;
+    const raceMs = new Date("2027-09-26T00:00:00.000Z").getTime();
+    const todayMs = new Date("2026-09-11T00:00:00.000Z").getTime();
+    const firstPhaseStartMs = new Date(`${firstPhase.startDate}T00:00:00.000Z`).getTime();
+    const weekMs = 7 * 24 * 60 * 60 * 1000;
+
+    // Structured plan starts close to structuredWindowWeeks before the race,
+    // not immediately after "today" - most of the year stays outside any plan.
+    const weeksBeforeRace = (raceMs - firstPhaseStartMs) / weekMs;
+    expect(weeksBeforeRace).toBeLessThanOrEqual(config.planning.structuredWindowWeeks + 1);
+    expect(weeksBeforeRace).toBeGreaterThan(config.planning.structuredWindowWeeks - 4);
+
+    const gapWeeks = (firstPhaseStartMs - todayMs) / weekMs;
+    expect(gapWeeks).toBeGreaterThan(20);
+  });
+
+  it("does not cap the window when the race is already within structuredWindowWeeks", () => {
+    const { plan } = generatePlan({
+      raceDate: "2026-11-20", // ~10 weeks out, well under the 24-week window
+      today: "2026-09-11",
+      currentWeeklyVolumeKm: 25,
+      config,
+    });
+
+    // Starts right away (the Monday on/after today), the full lead time is used.
+    expect(plan.phases[0]!.startDate).toBe("2026-09-14");
   });
 
   it("short lead time (10 weeks): scales phase minimums down but still produces a taper", () => {

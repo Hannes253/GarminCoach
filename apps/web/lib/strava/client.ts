@@ -69,6 +69,46 @@ export async function fetchStravaActivity(activityId: number, accessToken: strin
   return res.json();
 }
 
+interface StravaZoneDistributionBucket {
+  min: number;
+  max: number;
+  time: number; // seconds
+}
+
+interface StravaZoneSet {
+  type: string; // "heartrate" | "pace"
+  distribution_buckets: StravaZoneDistributionBucket[];
+}
+
+/**
+ * Strava's per-activity zone breakdown, a separate endpoint from the
+ * activity itself. Only populated if the athlete has HR zones configured in
+ * their Strava account; a 401/403/404 just means "no zone data for this
+ * activity", not a hard failure, so callers should treat a thrown error the
+ * same way (best-effort enrichment, not required for ingestion).
+ */
+export async function fetchStravaActivityZones(activityId: number, accessToken: string): Promise<StravaZoneSet[]> {
+  const res = await fetch(`${STRAVA_API_BASE}/activities/${activityId}/zones`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  if (!res.ok) return [];
+  return res.json();
+}
+
+/**
+ * Maps Strava's ordered heart-rate distribution buckets onto the same
+ * "z0", "z1", ... shape normalize.ts's FIT path produces from
+ * timeInHrZone (index 0 = below zone 1) - Strava's buckets are the
+ * athlete's own configured zones, in ascending order, same convention.
+ * Not yet cross-checked against a real multi-zone Strava account; re-verify
+ * once real data is available (same caveat as avgCadence below).
+ */
+export function hrZoneSecondsFromStravaZones(zones: StravaZoneSet[]): Record<string, number> | null {
+  const hr = zones.find((z) => z.type === "heartrate");
+  if (!hr || hr.distribution_buckets.length === 0) return null;
+  return Object.fromEntries(hr.distribution_buckets.map((bucket, i) => [`z${i}`, bucket.time]));
+}
+
 function mapStravaSport(type: string): NormalizedActivityInput["sport"] {
   const t = type.toLowerCase();
   if (t.includes("run")) return "run";

@@ -80,6 +80,14 @@ export interface GeneratedPlan {
  * pre-deload peak. Taper decreases linearly from the last pre-taper week's
  * volume to planning.taperRaceWeekVolumePct of it in race week.
  *
+ * The structured plan itself never spans more than
+ * planning.structuredWindowWeeks before the race, even if raceDate is much
+ * further out than that: it starts at max(today, raceDate -
+ * structuredWindowWeeks), rounded to the following Monday. Time before that
+ * anchor is intentionally outside any plan - a classic 16-24 week marathon
+ * block, not a training structure stretched across however long the actual
+ * lead time to the race happens to be.
+ *
  * ID generation uses crypto.randomUUID() (available in both Node and
  * browsers) - the only non-deterministic part of an otherwise pure
  * function; every date/volume calculation depends only on the explicit
@@ -89,7 +97,9 @@ export function generatePlan(params: GeneratePlanParams): GeneratedPlan {
   const { raceDate, today, config } = params;
   const currentWeeklyVolumeKm = params.currentWeeklyVolumeKm > 0 ? params.currentWeeklyVolumeKm : 15;
 
-  const startMonday = mondayOnOrAfter(today);
+  const todayMonday = mondayOnOrAfter(today);
+  const earliestStructuredStart = mondayOnOrAfter(addDays(raceDate, -config.planning.structuredWindowWeeks * 7));
+  const startMonday = todayMonday > earliestStructuredStart ? todayMonday : earliestStructuredStart;
   const totalWeeks = Math.max(1, fullWeeksBetween(startMonday, raceDate));
   const taperWeeks = Math.min(config.phaseLengths.taper.fixedWeeks, totalWeeks);
   const remainingWeeks = totalWeeks - taperWeeks;

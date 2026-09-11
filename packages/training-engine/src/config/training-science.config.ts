@@ -131,12 +131,18 @@ export interface TrainingScienceConfig {
   };
 
   planning: {
-    // Fallback ceiling for weekly running volume when the plan isn't
-    // anchored to a race-time goal (this app deliberately has none in v1).
-    // A generic "comfortable recreational marathon finish" target - the
-    // single most made-up number in this whole config, confirm with the
-    // app owner before relying on it.
+    // Ceiling for weekly running volume the ramp will never exceed.
+    // Calibrated with the app owner (2026-09) as a beginner-appropriate peak
+    // given a <20km/week starting point - not a race-time-goal-derived
+    // number, still an estimate to revisit once real training data comes in.
     defaultPeakWeeklyVolumeKm: number;
+    // How many weeks before raceDate the structured Base/Build/Specific/
+    // Taper plan is allowed to start. Confirmed with the app owner (2026-09):
+    // a classic 16-24 week marathon block, not stretched across however long
+    // the actual lead time to the race is (which can be a year+). Weeks
+    // between today and (raceDate - structuredWindowWeeks) are outside any
+    // plan - the app owner runs freely there, no generated structure.
+    structuredWindowWeeks: number;
     // Long run as a fraction of that week's total volume.
     longRunPctOfWeeklyVolume: number;
     longRunMaxKm: number;
@@ -157,15 +163,21 @@ export const defaultTrainingScienceConfig: TrainingScienceConfig = {
 
   zoneMethodology: {
     method: "threshold_relative",
-    source: "TODO: cite (e.g. Daniels / Friel / Coggan) - confirm with app owner before Phase 3",
+    source:
+      "Confirmed with the app owner (2026-09): NOT currently used to compute anything. Zone " +
+      "bucketing comes pre-computed from the source device - the Garmin watch's own zone " +
+      "boundaries via FIT's timeInHrZone, and (as of the Strava zones endpoint integration) the " +
+      "athlete's configured Strava HR zones. These percentages are kept only as a fallback seed for " +
+      "a possible future manual-zones settings UI (see user_settings.seed_hr_zones/hr_max/hr_rest, " +
+      "unused so far) and are not otherwise load-bearing.",
   },
 
   hrZones: [
-    { id: "z1", name: "Recovery", minPct: 0, maxPct: 68, source: "TODO: cite" },
-    { id: "z2", name: "Easy / Aerobic", minPct: 69, maxPct: 83, source: "TODO: cite" },
-    { id: "z3", name: "Moderate", minPct: 84, maxPct: 94, source: "TODO: cite" },
-    { id: "z4", name: "Threshold", minPct: 95, maxPct: 105, source: "TODO: cite" },
-    { id: "z5", name: "VO2max+", minPct: 106, maxPct: 999, source: "TODO: cite" },
+    { id: "z1", name: "Recovery", minPct: 0, maxPct: 68, source: "unused, see zoneMethodology.source" },
+    { id: "z2", name: "Easy / Aerobic", minPct: 69, maxPct: 83, source: "unused, see zoneMethodology.source" },
+    { id: "z3", name: "Moderate", minPct: 84, maxPct: 94, source: "unused, see zoneMethodology.source" },
+    { id: "z4", name: "Threshold", minPct: 95, maxPct: 105, source: "unused, see zoneMethodology.source" },
+    { id: "z5", name: "VO2max+", minPct: 106, maxPct: 999, source: "unused, see zoneMethodology.source" },
   ],
 
   loadModel: {
@@ -234,7 +246,8 @@ export const defaultTrainingScienceConfig: TrainingScienceConfig = {
   },
 
   planning: {
-    defaultPeakWeeklyVolumeKm: 60,
+    defaultPeakWeeklyVolumeKm: 45,
+    structuredWindowWeeks: 24,
     longRunPctOfWeeklyVolume: 0.32,
     longRunMaxKm: 32,
     taperRaceWeekVolumePct: 0.4,
@@ -245,7 +258,8 @@ export const defaultTrainingScienceConfig: TrainingScienceConfig = {
       taper: ["rest", "tempo", "easy", "rest", "rest", "easy", "long_run"],
     },
     source:
-      "TODO: cite - generic recreational-marathon weekly structure and peak-volume guideline, " +
-      "not calibrated to the app owner's goals; confirm before Phase 3 is considered done",
+      "Generic recreational-marathon weekly structure (Higdon-style novice/intermediate templates); " +
+      "defaultPeakWeeklyVolumeKm and structuredWindowWeeks confirmed with the app owner (2026-09), " +
+      "the weeklyTemplates split itself is still an estimate to revisit with real training data",
   },
 };
