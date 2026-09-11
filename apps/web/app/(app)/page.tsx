@@ -7,11 +7,13 @@ import {
 } from "@garmincoach/training-engine";
 import { DailyLogWidget } from "@/components/DailyLogWidget";
 import { FormStatusBadge } from "@/components/FormStatusBadge";
+import { TodaysWorkoutCard } from "@/components/TodaysWorkoutCard";
 import { WarningsList } from "@/components/WarningsList";
 import { loadEngineActivities } from "@/lib/data/activities";
+import { loadTodaysWorkout } from "@/lib/data/plan";
 
 export default async function HomePage() {
-  const activities = await loadEngineActivities();
+  const [activities, todaysWorkout] = await Promise.all([loadEngineActivities(), loadTodaysWorkout()]);
   const today = new Date().toISOString().slice(0, 10);
   const config = defaultTrainingScienceConfig;
 
@@ -29,6 +31,8 @@ export default async function HomePage() {
 
       <DailyLogWidget />
 
+      <TodaysWorkoutCard workout={todaysWorkout} />
+
       {activities.length === 0 ? (
         <div className="rounded-2xl bg-card p-4 text-sm text-muted">
           Noch keine Aktivitäten importiert. Geh auf die Import-Seite, um loszulegen.
@@ -43,10 +47,6 @@ export default async function HomePage() {
           )}
 
           <WarningsList warnings={warnings} />
-
-          <div className="rounded-2xl bg-card p-4 text-sm text-muted">
-            Die heutige Einheit steht hier, sobald der Plan zum Abhaken verknüpft ist.
-          </div>
         </>
       )}
     </div>
