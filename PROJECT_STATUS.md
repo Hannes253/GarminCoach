@@ -11,7 +11,7 @@ Wichtigster Anspruch des Nutzers (steht so auch im ursprünglichen Plan): Traini
 ## Repo / Branch
 
 - Repo: `Hannes253/GarminCoach` (GitHub)
-- Branch: `claude/marathon-coach-webapp-a9ptra` — **alles läuft auf diesem Branch**, nicht auf `main`. Bei einer neuen Session: diesen Branch auschecken, nicht neu von `main` anfangen.
+- Branch: `claude/friendly-carson-qmhhv1` — **alles läuft auf diesem Branch**, nicht auf `main`. Bei einer neuen Session: diesen Branch auschecken, nicht neu von `main` anfangen. (Achtung: `claude/marathon-coach-webapp-a9ptra` ist ein alter, verwaister Branch mit nur dem Phase-0-Stand — nicht verwenden.)
 - Der ursprüngliche Architektur-/Phasenplan liegt (nur in dieser Sandbox-Umgebung, nicht im Repo) unter `/root/.claude/plans/prompt-f-r-claude-code-stateful-crab.md` — falls in einer neuen Session nicht vorhanden, ist diese Datei hier die relevantere Quelle.
 
 ## Architektur
@@ -66,7 +66,7 @@ Migrationen werden **manuell** vom Nutzer im Supabase SQL-Editor ausgeführt (ke
 ## Bereits eingerichtete externe Dienste (vom Nutzer, mit Anleitung)
 
 - **Supabase-Projekt**: Postgres + Auth (Magic Link, Public Signup deaktiviert) + RLS auf jeder Tabelle
-- **Vercel-Deployment**: verbunden mit dem Branch `claude/marathon-coach-webapp-a9ptra`, Env-Vars gesetzt
+- **Vercel-Deployment**: laut früherem Stand verbunden mit dem Branch `claude/marathon-coach-webapp-a9ptra`, Env-Vars gesetzt — ⚠️ **das ist der falsche/veraltete Branch (nur Phase-0-Stand)**. Der Nutzer sollte in den Vercel-Projekteinstellungen prüfen und ggf. auf `claude/friendly-carson-qmhhv1` umstellen, sonst wird nicht die fertige App deployed.
 - **Strava API App**: OAuth + Webhook-Subscription aktiv, automatischer Import neuer Aktivitäten läuft produktiv
 
 ## Phasenstatus (alle abgeschlossen)
@@ -115,6 +115,6 @@ Der ursprüngliche Plan (Phasen 0–5) ist komplett durch. Mögliche Folgearbeit
 ## Arbeitsweise in diesem Projekt (für die neue Session wichtig)
 
 - Nach jeder inhaltlichen Änderung: `pnpm -r typecheck && pnpm -r lint && pnpm -r test`, bei App-Änderungen zusätzlich `pnpm --filter @garmincoach/training-engine boundary-check` und ein Produktions-`build` (mit Platzhalter-Env-Vars: `NEXT_PUBLIC_SUPABASE_URL`/`NEXT_PUBLIC_SUPABASE_ANON_KEY`), bevor committet wird.
-- Commits + Push direkt auf `claude/marathon-coach-webapp-a9ptra`, kein PR-Workflow bisher.
+- Commits + Push direkt auf `claude/friendly-carson-qmhhv1`, kein PR-Workflow bisher.
 - Jede trainingswissenschaftliche Annahme, die neu hinzukommt, braucht ein `source`-Feld in `training-science.config.ts` (auch als `"TODO: cite"` ok) und muss dem Nutzer explizit gemeldet werden — das hat er ausdrücklich so gewünscht.
 - UI-Design: iOS/Apple-Look, Design-Tokens in `apps/web/app/globals.css` (Grouped Background, Card-Oberfläche, Akzentfarbe `#0f624a`, Separator/Fill/Status-Farben, Light+Dark Mode).
