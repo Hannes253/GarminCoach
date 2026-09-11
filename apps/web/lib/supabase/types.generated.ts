@@ -237,6 +237,30 @@ export interface Database {
         Update: Partial<Database["public"]["Tables"]["planned_workouts"]["Row"]>;
         Relationships: [];
       };
+      plan_adjustments: {
+        Row: {
+          id: string;
+          user_id: string;
+          plan_id: string;
+          triggered_at: string;
+          trigger_type: "missed_single_session" | "missed_consecutive_days" | "long_break" | "overtraining_ramp" | "manual";
+          trigger_context: Json;
+          rule_applied: string;
+          rationale_text: string;
+          affected_week_ids: string[];
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["plan_adjustments"]["Row"]> & {
+          user_id: string;
+          plan_id: string;
+          triggered_at: string;
+          trigger_type: "missed_single_session" | "missed_consecutive_days" | "long_break" | "overtraining_ramp" | "manual";
+          rule_applied: string;
+          rationale_text: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["plan_adjustments"]["Row"]>;
+        Relationships: [];
+      };
       strava_connection: {
         Row: {
           user_id: string;

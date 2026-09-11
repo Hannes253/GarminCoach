@@ -9,11 +9,18 @@ import { DailyLogWidget } from "@/components/DailyLogWidget";
 import { FormStatusBadge } from "@/components/FormStatusBadge";
 import { TodaysWorkoutCard } from "@/components/TodaysWorkoutCard";
 import { WarningsList } from "@/components/WarningsList";
+import { runLazyAdaptation } from "@/lib/adaptation/runLazyAdaptation";
 import { loadEngineActivities } from "@/lib/data/activities";
 import { loadTodaysWorkout } from "@/lib/data/plan";
 
 export default async function HomePage() {
-  const [activities, todaysWorkout] = await Promise.all([loadEngineActivities(), loadTodaysWorkout()]);
+  const activities = await loadEngineActivities();
+  // Lazy recompute: reconciles planned_workouts against real activities and
+  // lets the adaptation engine react to missed sessions/weeks/overtraining
+  // before today's workout is read below - no cron/scheduling in v1, this
+  // is the only trigger.
+  await runLazyAdaptation(activities);
+  const todaysWorkout = await loadTodaysWorkout();
   const today = new Date().toISOString().slice(0, 10);
   const config = defaultTrainingScienceConfig;
 

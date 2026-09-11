@@ -37,6 +37,13 @@ describe("defaultTrainingScienceConfig", () => {
     expect(all.sort()).toEqual(["z1", "z2", "z3", "z4", "z5"]);
   });
 
+  it("adaptation thresholds are all positive", () => {
+    const { adaptationThresholds } = defaultTrainingScienceConfig;
+    expect(adaptationThresholds.volumeReductionOnMissedWeekPct).toBeGreaterThan(0);
+    expect(adaptationThresholds.missedWeeksForPhaseRegression).toBeGreaterThan(0);
+    expect(adaptationThresholds.recoveryWeekVolumeReductionPct).toBeGreaterThan(0);
+  });
+
   it("every weekly template has exactly 7 days including one long_run and no more than one rest short of a full week", () => {
     for (const template of Object.values(defaultTrainingScienceConfig.planning.weeklyTemplates)) {
       expect(template).toHaveLength(7);

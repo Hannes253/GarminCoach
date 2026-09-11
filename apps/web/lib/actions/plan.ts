@@ -102,3 +102,27 @@ export async function generateAndSaveTrainingPlan(): Promise<{ planId: string }>
 
   return { planId: plan.id };
 }
+
+/**
+ * Manual override for a planned workout that reconcileWorkouts didn't
+ * auto-match (e.g. done without a watch, or the activity import lagged) -
+ * marks it completed without linking a specific activity.
+ */
+export async function markWorkoutCompleted(workoutId: string): Promise<void> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Nicht angemeldet.");
+
+  const { error } = await supabase
+    .from("planned_workouts")
+    .update({ status: "completed" })
+    .eq("id", workoutId)
+    .eq("user_id", user.id);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/week/[weekId]", "page");
+  revalidatePath("/plan");
+  revalidatePath("/");
+}

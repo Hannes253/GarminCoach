@@ -100,6 +100,13 @@ export default async function PlanPage() {
         .order("sequence_in_week", { ascending: true })
     : { data: [] };
 
+  const { data: recentAdjustments } = await supabase
+    .from("plan_adjustments")
+    .select("id, triggered_at, rationale_text")
+    .eq("plan_id", plan.id)
+    .order("triggered_at", { ascending: false })
+    .limit(3);
+
   return (
     <div className="flex flex-col gap-6">
       <header className="flex items-start justify-between gap-3">
@@ -113,9 +120,22 @@ export default async function PlanPage() {
         <GeneratePlanButton hasPlan />
       </header>
 
+      {recentAdjustments != null && recentAdjustments.length > 0 && (
+        <section className="flex flex-col gap-2">
+          <h2 className="px-1 text-xs font-medium uppercase tracking-wide text-muted">Letzte Anpassung</h2>
+          <div className="flex flex-col gap-2 rounded-2xl bg-card p-4">
+            {recentAdjustments.map((adjustment) => (
+              <p key={adjustment.id} className="text-[13px] leading-snug text-foreground">
+                {adjustment.rationale_text}
+              </p>
+            ))}
+          </div>
+        </section>
+      )}
+
       {currentWeek && (
         <section className="flex flex-col gap-2">
-          <h2 className="flex items-baseline justify-between px-1">
+          <Link href={`/week/${currentWeek.id}`} className="flex items-baseline justify-between px-1">
             <span className="text-xs font-medium uppercase tracking-wide text-muted">
               Woche {currentWeek.week_number}
               {currentWeek.is_deload ? " · Deload" : ""}
@@ -124,7 +144,7 @@ export default async function PlanPage() {
               {currentWeek.target_volume_km} km
               {currentWeek.target_long_run_km != null ? ` · LR ${currentWeek.target_long_run_km} km` : ""}
             </span>
-          </h2>
+          </Link>
           <WeekWorkoutsList workouts={workouts ?? []} />
         </section>
       )}

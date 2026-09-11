@@ -99,10 +99,29 @@ export interface TrainingScienceConfig {
   };
 
   adaptationThresholds: {
+    // A week counts as "missed" for the two rules below once at least this
+    // many of its non-rest planned_workouts ended up status="missed" (not
+    // necessarily every single one - a lone easy run logged in an otherwise
+    // abandoned week still counts as missed).
     consecutiveMissedDaysForVolumeReduction: number;
-    longBreakThresholdDays: number;
     overreachAcwrThreshold: number;
-    volumeReductionOnLongBreakPct: number;
+    // A missed week (see above) reduces the *following* week's target
+    // volume by this percentage, relative to the missed week's own
+    // (already lower, pre-ramp) target - not the following week's
+    // already-higher ramped target - so the ramp effectively steps back
+    // one week instead of just continuing upward from a week that didn't
+    // happen.
+    volumeReductionOnMissedWeekPct: number;
+    // This many consecutive missed weeks (see above) trigger a full phase
+    // regression: the plan is regenerated from today with the same race
+    // date and the old plan marked superseded, rather than patching volume.
+    missedWeeksForPhaseRegression: number;
+    // The overtraining guard's response when triggered (ramp-rate violation
+    // or ACWR over threshold): the next not-yet-started week is converted
+    // into an inserted recovery week at this volume reduction, rather than
+    // literally inserting a 8th day into the calendar (which would either
+    // push the fixed race date or compress a later week - both worse).
+    recoveryWeekVolumeReductionPct: number;
     source: string;
   };
 
@@ -202,9 +221,10 @@ export const defaultTrainingScienceConfig: TrainingScienceConfig = {
 
   adaptationThresholds: {
     consecutiveMissedDaysForVolumeReduction: 3,
-    longBreakThresholdDays: 14,
     overreachAcwrThreshold: 1.5,
-    volumeReductionOnLongBreakPct: 25,
+    volumeReductionOnMissedWeekPct: 20,
+    missedWeeksForPhaseRegression: 3,
+    recoveryWeekVolumeReductionPct: 35,
     source: "TODO: cite (e.g. acute:chronic workload ratio literature)",
   },
 

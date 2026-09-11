@@ -22,30 +22,45 @@ export function generateWeekWorkouts(
   config: TrainingScienceConfig,
 ): PlannedWorkout[] {
   const template = config.planning.weeklyTemplates[phase.phaseType];
-
   const longRunKm =
     week.targetLongRunKm ?? week.targetVolumeKm * config.planning.longRunPctOfWeeklyVolume;
-  const nonRestNonLongCount = template.filter((t) => t !== "rest" && t !== "long_run").length;
-  const remainingVolumeKm = Math.max(0, week.targetVolumeKm - longRunKm);
+  const distances = distanceForWorkoutSlots(template, week.targetVolumeKm, longRunKm);
+
+  return template.map((workoutType, dayIndex) => ({
+    id: crypto.randomUUID(),
+    planWeekId: week.id,
+    date: addDays(week.weekStartDate, dayIndex),
+    sequenceInWeek: dayIndex,
+    workoutType,
+    targetDistanceKm: distances[dayIndex]!,
+    targetDurationMinutes: null,
+    targetPaceRange: null,
+    targetHrZone: null,
+    status: "planned",
+    completedActivityId: null,
+  }));
+}
+
+/**
+ * Splits targetVolumeKm across a fixed sequence of workout-type slots: the
+ * long_run slot gets longRunKm, everything else that's left is split evenly
+ * across the remaining non-rest slots, rest slots get null. Shared between
+ * generateWeekWorkouts (a brand-new week) and the adaptation engine
+ * (redistributing volume across an existing week's unchanged slot sequence,
+ * e.g. after a missed-week volume reduction).
+ */
+export function distanceForWorkoutSlots(
+  workoutTypes: WorkoutType[],
+  targetVolumeKm: number,
+  longRunKm: number,
+): Array<number | null> {
+  const nonRestNonLongCount = workoutTypes.filter((t) => t !== "rest" && t !== "long_run").length;
+  const remainingVolumeKm = Math.max(0, targetVolumeKm - longRunKm);
   const perSlotKm = nonRestNonLongCount > 0 ? remainingVolumeKm / nonRestNonLongCount : 0;
 
-  return template.map((workoutType, dayIndex) => {
-    const date = addDays(week.weekStartDate, dayIndex);
-    const targetDistanceKm = distanceForSlot(workoutType, longRunKm, perSlotKm);
-
-    return {
-      id: crypto.randomUUID(),
-      planWeekId: week.id,
-      date,
-      sequenceInWeek: dayIndex,
-      workoutType,
-      targetDistanceKm: targetDistanceKm === null ? null : Math.round(targetDistanceKm * 10) / 10,
-      targetDurationMinutes: null,
-      targetPaceRange: null,
-      targetHrZone: null,
-      status: "planned",
-      completedActivityId: null,
-    };
+  return workoutTypes.map((workoutType) => {
+    const distance = distanceForSlot(workoutType, longRunKm, perSlotKm);
+    return distance === null ? null : Math.round(distance * 10) / 10;
   });
 }
 
