@@ -65,6 +65,19 @@ export async function generateAndSaveTrainingPlan(): Promise<{ planId: string }>
   });
   const workouts = generateAllWorkouts(weeks, plan.phases, config);
 
+  // Supersede the old plan *before* inserting the new one: if anything
+  // below fails partway through, the worst case is "no active plan" (safe -
+  // this page just offers "Plan erstellen" again) rather than two rows with
+  // status="active" at once, which would break every
+  // .eq("status", "active").maybeSingle() query in the app.
+  if (existingActivePlan) {
+    const { error: supersedeError } = await supabase
+      .from("training_plans")
+      .update({ status: "superseded", superseded_by_plan_id: plan.id })
+      .eq("id", existingActivePlan.id);
+    if (supersedeError) throw new Error(supersedeError.message);
+  }
+
   const { error: planError } = await supabase.from("training_plans").insert(trainingPlanToInsert(plan, user.id));
   if (planError) throw new Error(planError.message);
 
@@ -82,14 +95,6 @@ export async function generateAndSaveTrainingPlan(): Promise<{ planId: string }>
     .from("planned_workouts")
     .insert(workouts.map((workout) => plannedWorkoutToInsert(workout, user.id)));
   if (workoutsError) throw new Error(workoutsError.message);
-
-  if (existingActivePlan) {
-    const { error: supersedeError } = await supabase
-      .from("training_plans")
-      .update({ status: "superseded", superseded_by_plan_id: plan.id })
-      .eq("id", existingActivePlan.id);
-    if (supersedeError) throw new Error(supersedeError.message);
-  }
 
   const { error: settingsError } = await supabase
     .from("user_settings")

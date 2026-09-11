@@ -142,6 +142,18 @@ async function runLazyAdaptationUnsafe(activities: Activity[]): Promise<void> {
   if (result.regeneratedPlan) {
     const { plan: newPlan, weeks: newWeeks, workouts: newWorkouts } = result.regeneratedPlan;
 
+    // Supersede the old plan *before* inserting the new one: if anything
+    // below fails partway through, the worst case is "no active plan"
+    // (safe - the Plan page just offers "Plan erstellen" again) rather than
+    // two rows with status="active" at once, which would break every
+    // .eq("status", "active").maybeSingle() query in the app (training_plans
+    // has no partial unique index enforcing at most one active plan per user).
+    const { error: supersedeError } = await supabase
+      .from("training_plans")
+      .update({ status: "superseded", superseded_by_plan_id: newPlan.id })
+      .eq("id", planRow.id);
+    if (supersedeError) throw new Error(supersedeError.message);
+
     const { error: planError } = await supabase.from("training_plans").insert(trainingPlanToInsert(newPlan, user.id));
     if (planError) throw new Error(planError.message);
 
@@ -160,12 +172,8 @@ async function runLazyAdaptationUnsafe(activities: Activity[]): Promise<void> {
       .insert(newWorkouts.map((workout) => plannedWorkoutToInsert(workout, user.id)));
     if (workoutsError) throw new Error(workoutsError.message);
 
-    const { error: supersedeError } = await supabase
-      .from("training_plans")
-      .update({ status: "superseded", superseded_by_plan_id: newPlan.id })
-      .eq("id", planRow.id);
-    if (supersedeError) throw new Error(supersedeError.message);
-
+    // Least critical - no page reads current_plan_id back, they all query
+    // training_plans directly, so a failure here doesn't break anything.
     const { error: settingsError } = await supabase
       .from("user_settings")
       .update({ current_plan_id: newPlan.id })

@@ -7,11 +7,17 @@
 const CACHE_NAME = "garmincoach-v1";
 const OFFLINE_URL = "/offline";
 
+async function cacheIfOk(cache, request, response) {
+  if (response.ok) await cache.put(request, response);
+}
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll([OFFLINE_URL, "/manifest.webmanifest"]))
+      // allSettled, not addAll: one route transiently failing (cold start,
+      // brief deploy hiccup) shouldn't block the SW from activating at all.
+      .then((cache) => Promise.allSettled([cache.add(OFFLINE_URL), cache.add("/manifest.webmanifest")]))
       .then(() => self.skipWaiting()),
   );
 });
@@ -39,8 +45,7 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          caches.open(CACHE_NAME).then((cache) => cacheIfOk(cache, request, response.clone()));
           return response;
         })
         .catch(async () => (await caches.match(request)) ?? (await caches.match(OFFLINE_URL))),
@@ -53,11 +58,12 @@ self.addEventListener("fetch", (event) => {
   if (["style", "script", "image", "font", "worker"].includes(request.destination)) {
     event.respondWith(
       caches.match(request).then((cached) => {
-        const fetchAndCache = fetch(request).then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
-          return response;
-        });
+        const fetchAndCache = fetch(request)
+          .then((response) => {
+            caches.open(CACHE_NAME).then((cache) => cacheIfOk(cache, request, response.clone()));
+            return response;
+          })
+          .catch(() => cached);
         return cached ?? fetchAndCache;
       }),
     );
