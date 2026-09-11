@@ -57,7 +57,7 @@ const items = [
   { href: "/history", label: "Verlauf", Icon: ChartIcon },
   { href: "/import", label: "Import", Icon: ImportIcon },
   { href: "/plan", label: "Plan", Icon: PlanIcon },
-  { href: "/settings", label: "Mehr", Icon: GearIcon },
+  { href: "/settings", label: "Einstellungen", Icon: GearIcon },
 ];
 
 export function BottomNav() {

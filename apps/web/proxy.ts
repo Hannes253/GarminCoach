@@ -50,6 +50,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|icons/|workers/|manifest.webmanifest|auth/callback|api/strava/webhook).*)",
+    "/((?!_next/static|_next/image|favicon.ico|icons/|workers/|sw.js|offline|manifest.webmanifest|auth/callback|api/strava/webhook).*)",
   ],
 };

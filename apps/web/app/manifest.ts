@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Persönlicher Marathon-Trainings-Coach",
     start_url: "/",
     display: "standalone",
-    background_color: "#ffffff",
+    background_color: "#f2f2f7",
     theme_color: "#0f624a",
     icons: [
       {
