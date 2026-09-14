@@ -16,6 +16,15 @@
   --accent-pink: #ff375f;
   --accent-emerald: #30b0c0;
   --radius-card: 1.75rem;
+
+  /* Chart colors (see dataviz skill validation notes in FitnessTrendChart/
+     IntensityBar) - kept separate from the badge accents above so a chart
+     re-palette never accidentally re-themes badges/icons too. */
+  --chart-ctl: var(--accent);
+  --chart-atl: #30b0c0;
+  --chart-intensity-1: #6badff;
+  --chart-intensity-2: #2f7de0;
+  --chart-intensity-3: #003d80;
 }
 
 @theme inline {
@@ -33,6 +42,11 @@
   --color-accent-purple: var(--accent-purple);
   --color-accent-pink: var(--accent-pink);
   --color-accent-emerald: var(--accent-emerald);
+  --color-chart-ctl: var(--chart-ctl);
+  --color-chart-atl: var(--chart-atl);
+  --color-chart-intensity-1: var(--chart-intensity-1);
+  --color-chart-intensity-2: var(--chart-intensity-2);
+  --color-chart-intensity-3: var(--chart-intensity-3);
   --radius-card: var(--radius-card);
   --font-sans: var(--font-jakarta);
   --font-mono: var(--font-geist-mono);
@@ -48,6 +62,13 @@
     --fill: rgba(120, 120, 128, 0.24);
     --accent: #0a84ff;
     --accent-foreground: #ffffff;
+
+    /* Re-stepped for the dark surface - see FitnessTrendChart/IntensityBar
+       comments; --chart-ctl inherits the dark --accent above automatically. */
+    --chart-atl: #1f96a6;
+    --chart-intensity-1: #2f5c8f;
+    --chart-intensity-2: #3d9bff;
+    --chart-intensity-3: #bfe0ff;
   }
 }
 

@@ -9,9 +9,13 @@ import {
   defaultTrainingScienceConfig,
   trackLongRunProgression,
 } from "@garmincoach/training-engine";
+import { BarChart } from "@/components/charts/BarChart";
+import { FitnessTrendChart } from "@/components/charts/FitnessTrendChart";
+import { IntensityBar } from "@/components/charts/IntensityBar";
 import { FormStatusBadge } from "@/components/FormStatusBadge";
 import { WarningsList } from "@/components/WarningsList";
 import { loadEngineActivities } from "@/lib/data/activities";
+import { loadDashboardExtras } from "@/lib/data/plan";
 
 function formatPace(secPerKm: number): string {
   const m = Math.floor(secPerKm / 60);
@@ -19,18 +23,9 @@ function formatPace(secPerKm: number): string {
   return `${m}:${String(s).padStart(2, "0")}/km`;
 }
 
-function Bar({ widthPct, valueLabel }: { widthPct: number; valueLabel: string }) {
-  return (
-    <div className="flex items-center gap-2.5">
-      <div className="h-2 flex-1 overflow-hidden rounded-full bg-fill">
-        <div
-          className="h-full rounded-full bg-accent"
-          style={{ width: `${Math.min(100, Math.max(0, widthPct))}%` }}
-        />
-      </div>
-      <span className="w-16 shrink-0 text-right text-xs tabular-nums text-muted">{valueLabel}</span>
-    </div>
-  );
+function formatShortDate(iso: string): string {
+  const d = new Date(`${iso}T00:00:00.000Z`);
+  return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", timeZone: "UTC" });
 }
 
 function Card({ title, children }: { title: string; children: ReactNode }) {
@@ -49,18 +44,18 @@ export default async function HistoryPage() {
 
   const weeklyVolume = computeWeeklyVolume(activities);
   const recentWeeks = weeklyVolume.slice(-8);
-  const maxWeeklyKm = Math.max(1, ...recentWeeks.map((w) => w.distanceKm));
 
   const loadSeries = computeRollingLoad(activities, today, config);
   const latestLoad = loadSeries.at(-1);
   const formStatus = latestLoad ? classifyForm(latestLoad.tsb, config) : null;
+  const trendPoints = loadSeries.slice(-56).map((p) => ({ date: p.date, ctl: p.ctl, atl: p.atl }));
 
   const intensity = computeIntensityDistribution(activities, config);
   const efficiency = computeAerobicEfficiencyTrend(activities, config);
   const longRunWeeks = trackLongRunProgression(weeklyVolume).slice(-8);
-  const maxLongRunKm = Math.max(1, ...longRunWeeks.map((w) => w.longRunKm));
 
   const warnings = aggregateWarnings(weeklyVolume, loadSeries, config);
+  const extras = await loadDashboardExtras();
 
   if (activities.length === 0) {
     return (
@@ -91,6 +86,11 @@ export default async function HistoryPage() {
               TSB {latestLoad.tsb.toFixed(0)} · Akute Last (7T) {latestLoad.atl.toFixed(0)} · Chronische Last
               ({config.loadModel.ctlWindowDays}T) {latestLoad.ctl.toFixed(0)}
             </p>
+            {trendPoints.length >= 2 && (
+              <div className="mt-1">
+                <FitnessTrendChart points={trendPoints} />
+              </div>
+            )}
           </>
         ) : (
           <p className="text-sm text-muted">Noch keine Daten für den Formstand.</p>
@@ -98,25 +98,24 @@ export default async function HistoryPage() {
       </Card>
 
       <Card title="Wochenvolumen (Laufen)">
-        <div className="flex flex-col gap-2">
-          {recentWeeks.map((w) => (
-            <Bar
-              key={w.weekStart}
-              widthPct={(w.distanceKm / maxWeeklyKm) * 100}
-              valueLabel={`${w.distanceKm.toFixed(0)} km`}
-            />
-          ))}
-        </div>
+        <BarChart
+          points={recentWeeks.map((w) => ({ key: w.weekStart, label: formatShortDate(w.weekStart), value: w.distanceKm }))}
+          valueSuffix=" km"
+          targetValue={extras.currentWeekTargetVolumeKm ?? undefined}
+          targetLabel={extras.currentWeekTargetVolumeKm != null ? "Ziel" : undefined}
+        />
       </Card>
 
       <Card title="Intensitätsverteilung">
         {intensity ? (
           <>
-            <div className="flex flex-col gap-2">
-              <Bar widthPct={intensity.easyPct} valueLabel={`${intensity.easyPct.toFixed(0)}% locker`} />
-              <Bar widthPct={intensity.moderatePct} valueLabel={`${intensity.moderatePct.toFixed(0)}% mittel`} />
-              <Bar widthPct={intensity.hardPct} valueLabel={`${intensity.hardPct.toFixed(0)}% hart`} />
-            </div>
+            <IntensityBar
+              segments={[
+                { key: "easy", label: "Locker", pct: intensity.easyPct },
+                { key: "moderate", label: "Mittel", pct: intensity.moderatePct },
+                { key: "hard", label: "Hart", pct: intensity.hardPct },
+              ]}
+            />
             <p className="text-xs text-muted">
               Ziel: {intensity.targetEasyPct}% locker (80/20-Prinzip) ·{" "}
               {intensity.deviationPct >= 0
@@ -150,15 +149,11 @@ export default async function HistoryPage() {
       </Card>
 
       <Card title="Long-Run-Entwicklung">
-        <div className="flex flex-col gap-2">
-          {longRunWeeks.map((w) => (
-            <Bar
-              key={w.weekStart}
-              widthPct={(w.longRunKm / maxLongRunKm) * 100}
-              valueLabel={`${w.longRunKm.toFixed(1)} km`}
-            />
-          ))}
-        </div>
+        <BarChart
+          points={longRunWeeks.map((w) => ({ key: w.weekStart, label: formatShortDate(w.weekStart), value: w.longRunKm }))}
+          valueSuffix=" km"
+          formatValue={(v) => v.toFixed(1)}
+        />
       </Card>
     </div>
   );

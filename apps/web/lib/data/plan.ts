@@ -60,3 +60,61 @@ export async function loadTodaysWorkout(): Promise<TodaysWorkout | null> {
 
   return workout ?? null;
 }
+
+export interface DashboardExtras {
+  raceName: string | null;
+  daysToRace: number | null;
+  currentWeekTargetVolumeKm: number | null;
+}
+
+function daysBetween(fromIso: string, toIso: string): number {
+  const from = new Date(`${fromIso}T00:00:00.000Z`).getTime();
+  const to = new Date(`${toIso}T00:00:00.000Z`).getTime();
+  return Math.round((to - from) / (1000 * 60 * 60 * 24));
+}
+
+/** Race countdown and this week's target volume, for the Home dashboard's stat cards. */
+export async function loadDashboardExtras(): Promise<DashboardExtras> {
+  const empty: DashboardExtras = { raceName: null, daysToRace: null, currentWeekTargetVolumeKm: null };
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return empty;
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  const { data: settings } = await supabase
+    .from("user_settings")
+    .select("race_date, race_name")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const daysToRace = settings?.race_date ? daysBetween(today, settings.race_date) : null;
+
+  const { data: plan } = await supabase
+    .from("training_plans")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("status", "active")
+    .maybeSingle();
+
+  let currentWeekTargetVolumeKm: number | null = null;
+  if (plan) {
+    const { data: phases } = await supabase.from("plan_phases").select("id").eq("plan_id", plan.id);
+    const phaseIds = (phases ?? []).map((p) => p.id);
+    if (phaseIds.length > 0) {
+      const { data: week } = await supabase
+        .from("plan_weeks")
+        .select("target_volume_km")
+        .in("phase_id", phaseIds)
+        .gte("week_start_date", addDays(today, -6))
+        .lte("week_start_date", today)
+        .maybeSingle();
+      currentWeekTargetVolumeKm = week?.target_volume_km ?? null;
+    }
+  }
+
+  return { raceName: settings?.race_name ?? null, daysToRace, currentWeekTargetVolumeKm };
+}
