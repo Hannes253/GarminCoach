@@ -26,15 +26,19 @@ export function BarChart({
   valueSuffix = "",
   targetValue,
   targetLabel,
-  formatValue = (v) => v.toFixed(0),
+  decimals = 0,
 }: {
   points: BarChartPoint[];
   valueSuffix?: string;
   targetValue?: number;
   targetLabel?: string;
-  formatValue?: (v: number) => string;
+  /** Fraction digits for displayed values - a plain number instead of a
+   * formatter function, since a Server Component can't pass a function prop
+   * across to this Client Component. */
+  decimals?: number;
 }) {
   const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const formatValue = (v: number) => v.toFixed(decimals);
 
   if (points.length === 0) {
     return <p className="text-sm text-muted">Noch keine Daten.</p>;

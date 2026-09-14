@@ -152,7 +152,7 @@ export default async function HistoryPage() {
         <BarChart
           points={longRunWeeks.map((w) => ({ key: w.weekStart, label: formatShortDate(w.weekStart), value: w.longRunKm }))}
           valueSuffix=" km"
-          formatValue={(v) => v.toFixed(1)}
+          decimals={1}
         />
       </Card>
     </div>
